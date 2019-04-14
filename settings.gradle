@@ -1,0 +1,5 @@
+rootProject.name = 'modularization'
+
+include 'core'
+include 'common'
+
