@@ -2,4 +2,7 @@ rootProject.name = 'modularization'
 
 include 'core'
 include 'common'
+include 'example'
+include ':example:service'
+include ':example:provider'
 

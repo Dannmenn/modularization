@@ -10,6 +10,9 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/example" />
+            <option value="$PROJECT_DIR$/example/provider" />
+            <option value="$PROJECT_DIR$/example/service" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />
