@@ -1,20 +1,20 @@
 package pl.mendroch.modularization.common.api.model;
 
 import java.lang.module.ModuleDescriptor;
-import java.util.Properties;
-import java.util.jar.Manifest;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ModuleJarInfoBuilder {
-    private Manifest manifest;
-    private Properties dependencies;
+    private JarInfo jarInfo;
+    private Set<Dependency> dependencies = new HashSet<>();
     private ModuleDescriptor descriptor;
 
-    public ModuleJarInfoBuilder setManifest(Manifest manifest) {
-        this.manifest = manifest;
+    public ModuleJarInfoBuilder setJarInfo(JarInfo jarInfo) {
+        this.jarInfo = jarInfo;
         return this;
     }
 
-    public ModuleJarInfoBuilder setDependencies(Properties dependencies) {
+    public ModuleJarInfoBuilder setDependencies(Set<Dependency> dependencies) {
         this.dependencies = dependencies;
         return this;
     }
@@ -25,6 +25,6 @@ public class ModuleJarInfoBuilder {
     }
 
     public ModuleJarInfo createModuleJarInfo() {
-        return new ModuleJarInfo(manifest, dependencies, descriptor);
+        return new ModuleJarInfo(jarInfo, dependencies, descriptor);
     }
 }

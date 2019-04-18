@@ -21,16 +21,16 @@ public class DirectoryJarInfoLoaderTest {
         assertEquals(4, moduleJarInfos.size());
         validateModuleInfo(moduleJarInfos.get(0),
                 "pl.mendroch.modularization.example.main",
-                "{org.apache.commons:commons-lang3=3.3.2, pl.mendroch.modularization.test:provider=1.0-SNAPSHOT}");
+                "[org.apache.commons:commons-lang3@3.3.2, pl.mendroch.modularization.test:provider@1.0-SNAPSHOT]");
         validateModuleInfo(moduleJarInfos.get(1),
                 "pl.mendroch.modularization.example.provider",
-                "{org.apache.commons:commons-lang3=3.1, pl.mendroch.modularization.test:service=1.0-SNAPSHOT}");
+                "[org.apache.commons:commons-lang3@3.1, pl.mendroch.modularization.test:service@1.0-SNAPSHOT]");
         validateModuleInfo(moduleJarInfos.get(2),
                 "pl.mendroch.modularization.example.provider",
-                "{org.apache.commons:commons-lang3=3.3.2, pl.mendroch.modularization.test:service=1.0-SNAPSHOT}");
+                "[org.apache.commons:commons-lang3@3.3.2, pl.mendroch.modularization.test:service@1.0-SNAPSHOT]");
         validateModuleInfo(moduleJarInfos.get(3),
                 "pl.mendroch.modularization.example.service",
-                "{}");
+                "[]");
     }
 
     private void validateModuleInfo(ModuleJarInfo moduleJarInfo, String expectedName, String expectedDependencies) {

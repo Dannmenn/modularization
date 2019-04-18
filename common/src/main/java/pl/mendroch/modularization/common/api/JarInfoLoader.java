@@ -1,7 +1,7 @@
 package pl.mendroch.modularization.common.api;
 
+import pl.mendroch.modularization.common.api.model.Dependency;
 import pl.mendroch.modularization.common.api.model.JarInfo;
-import pl.mendroch.modularization.common.api.model.JarInfoBuilder;
 import pl.mendroch.modularization.common.api.model.ModuleJarInfo;
 import pl.mendroch.modularization.common.api.model.ModuleJarInfoBuilder;
 
@@ -11,11 +11,17 @@ import java.lang.module.ModuleFinder;
 import java.lang.module.ModuleReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
+import java.util.jar.Attributes;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
+
+import static java.util.jar.Attributes.Name.*;
+import static pl.mendroch.modularization.common.api.model.JarInfoBuilder.jarInfoBuilder;
 
 public final class JarInfoLoader {
     private JarInfoLoader() {
@@ -23,13 +29,26 @@ public final class JarInfoLoader {
     }
 
     public static JarInfo loadJarInformation(Path path) {
-        JarInfoBuilder builder = new JarInfoBuilder();
+        return readJarFile(path, null);
+    }
+
+    private static JarInfo readJarFile(Path path, Consumer<JarFile> jarFileConsumer) {
         try (JarFile jarFile = new JarFile(path.toFile())) {
-            builder.setManifest(jarFile.getManifest());
+            if (jarFileConsumer != null) {
+                jarFileConsumer.accept(jarFile);
+            }
+            Manifest manifest = jarFile.getManifest();
+            Attributes mainAttributes = manifest.getMainAttributes();
+            return jarInfoBuilder()
+                    .setFileName(path.getFileName().toString())
+                    .setMainClass(mainAttributes.getValue(MAIN_CLASS))
+                    .setSpecificationTitle(mainAttributes.getValue(SPECIFICATION_TITLE))
+                    .setSpecificationVersion(mainAttributes.getValue(SPECIFICATION_VERSION))
+                    .setImplementationVersion(mainAttributes.getValue(IMPLEMENTATION_VERSION))
+                    .createJarInfo();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e.getMessage(), e);
         }
-        return builder.createJarInfo();
     }
 
     public static List<ModuleJarInfo> loadModulesInformation(Path path) throws IOException {
@@ -42,29 +61,37 @@ public final class JarInfoLoader {
     public static ModuleJarInfo loadModuleInformation(Path path) {
         ModuleJarInfoBuilder builder = new ModuleJarInfoBuilder();
         ModuleFinder finder = ModuleFinder.of(path);
-        //assert only one
-        for (ModuleReference reference : finder.findAll()) {
+        Set<ModuleReference> references = finder.findAll();
+        assert references.size() == 1 : "Found more than one module: " + path;
+        for (ModuleReference reference : references) {
             builder.setDescriptor(reference.descriptor());
         }
-        try (JarFile jarFile = new JarFile(path.toFile())) {
-            builder.setManifest(jarFile.getManifest());
-            ZipEntry entry = getDependenciesEntry(jarFile);
-            if (entry != null) {
-                try (InputStream inputStream = jarFile.getInputStream(entry)) {
-                    Properties dependencies = new Properties();
-                    dependencies.load(inputStream);
-                    builder.setDependencies(dependencies);
+        builder.setJarInfo(readJarFile(path, jarFile -> {
+            try {
+                ZipEntry entry = getDependenciesEntry(jarFile);
+                if (entry != null) {
+                    try (InputStream inputStream = jarFile.getInputStream(entry)) {
+                        Properties dependencies = new Properties();
+                        dependencies.load(inputStream);
+                        builder.setDependencies(convertPropertiesToDependencies(dependencies));
+                    }
                 }
+            } catch (IOException e) {
+                throw new RuntimeException(e.getMessage(), e);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        }));
         return builder.createModuleJarInfo();
     }
 
-    private static String extractVersion(Path fileName) {
-        String file = fileName.toString();
-        return file.substring(file.indexOf("-"), file.lastIndexOf("."));
+    private static Set<Dependency> convertPropertiesToDependencies(Properties properties) {
+        Set<Dependency> dependencies = new TreeSet<>(Comparator.comparing(Dependency::toString));
+        for (Entry<Object, Object> entry : properties.entrySet()) {
+            String key = (String) entry.getKey();
+            String[] parts = key.split(":");
+            assert parts.length == 2 : "Invalid jar name format: " + key;
+            dependencies.add(new Dependency(parts[0], parts[1], (String) entry.getValue()));
+        }
+        return dependencies;
     }
 
     private static ZipEntry getDependenciesEntry(JarFile jarFile) {

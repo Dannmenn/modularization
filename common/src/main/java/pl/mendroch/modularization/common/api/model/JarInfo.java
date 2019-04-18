@@ -1,22 +1,42 @@
 package pl.mendroch.modularization.common.api.model;
 
-import java.util.jar.Manifest;
-
 public class JarInfo {
-    final Manifest manifest;
+    final String fileName;
+    final String SpecificationTitle;
+    final String SpecificationVersion;
+    final String ImplementationVersion;
+    final String MainClass;
 
-    JarInfo(Manifest manifest) {
-        this.manifest = manifest;
+    JarInfo(String fileName, String specificationTitle, String specificationVersion, String implementationVersion, String mainClass) {
+        this.fileName = fileName;
+        SpecificationTitle = specificationTitle;
+        SpecificationVersion = specificationVersion;
+        ImplementationVersion = implementationVersion;
+        MainClass = mainClass;
     }
 
-    public Manifest getManifest() {
-        return manifest;
+    public String getFileName() {
+        return fileName;
+    }
+
+    public String getSpecificationTitle() {
+        return SpecificationTitle;
+    }
+
+    public String getSpecificationVersion() {
+        return SpecificationVersion;
+    }
+
+    public String getImplementationVersion() {
+        return ImplementationVersion;
+    }
+
+    public String getMainClass() {
+        return MainClass;
     }
 
     @Override
     public String toString() {
-        return "JarInfo{" +
-                "manifest=" + manifest.getMainAttributes().entrySet() +
-                '}';
+        return fileName + ":" + SpecificationVersion;
     }
 }
