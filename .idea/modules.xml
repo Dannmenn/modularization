@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/modularization.iml" filepath="$PROJECT_DIR$/.idea/modules/modularization.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/modularization.common.iml" filepath="$PROJECT_DIR$/.idea/modules/common/modularization.common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/modularization.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common/modularization.common.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/modularization.common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/common/modularization.common.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/modularization.core.iml" filepath="$PROJECT_DIR$/.idea/modules/core/modularization.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/modularization.core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core/modularization.core.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/modularization.core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/core/modularization.core.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/example/modularization.example.iml" filepath="$PROJECT_DIR$/.idea/modules/example/modularization.example.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/example/modularization.example.main.iml" filepath="$PROJECT_DIR$/.idea/modules/example/modularization.example.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/example/provider/modularization.example.provider.iml" filepath="$PROJECT_DIR$/.idea/modules/example/provider/modularization.example.provider.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/example/provider/modularization.example.provider.main.iml" filepath="$PROJECT_DIR$/.idea/modules/example/provider/modularization.example.provider.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/example/provider/modularization.example.provider.test.iml" filepath="$PROJECT_DIR$/.idea/modules/example/provider/modularization.example.provider.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/example/service/modularization.example.service.iml" filepath="$PROJECT_DIR$/.idea/modules/example/service/modularization.example.service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/example/service/modularization.example.service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/example/service/modularization.example.service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/example/service/modularization.example.service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/example/service/modularization.example.service.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/example/modularization.example.test.iml" filepath="$PROJECT_DIR$/.idea/modules/example/modularization.example.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/modularization.main.iml" filepath="$PROJECT_DIR$/.idea/modules/modularization.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/modularization.test.iml" filepath="$PROJECT_DIR$/.idea/modules/modularization.test.iml" />
+    </modules>
+  </component>
+</project>
