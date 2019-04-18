@@ -4,20 +4,10 @@ plugins {
 }
 
 group 'pl.mendroch.modularization.test'
-
-sourceCompatibility = 12
-targetCompatibility = 12
+version '1.0-SNAPSHOT'
 
 application {
     mainClassName = "pl.mendroch.modularization.example/pl.mendroch.modularization.example.ExampleEntryPoint"
-}
-
-repositories {
-    mavenCentral()
-}
-
-configurations {
-    dynamicImplementation.extendsFrom implementation
 }
 
 dependencies {
@@ -30,7 +20,7 @@ compileJava {
 }
 
 distZip {
-    into("$applicationName/lib") {
+    into("$applicationName-$version/lib") {
         from configurations.dynamicImplementation - configurations.runtimeClasspath
     }
 }

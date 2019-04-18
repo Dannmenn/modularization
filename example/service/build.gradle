@@ -1,15 +1,9 @@
 plugins {
-    id 'java'
+    id 'java-library'
 }
 
 group 'pl.mendroch.modularization.test'
-
-sourceCompatibility = 12
-targetCompatibility = 12
-
-repositories {
-    mavenCentral()
-}
+version '1.0-SNAPSHOT'
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -18,3 +12,24 @@ dependencies {
 compileJava {
     options.compilerArgs.addAll("--module-path", classpath.asPath)
 }
+
+jar {
+    from configurations.dynamicImplementation - configurations.runtimeClasspath
+    metaInf {
+        def resFile = new File(buildDir, 'generated/resources/META-INF/')
+        resFile.mkdirs()
+        def file = new File(resFile, 'dependencies.properties')
+        file.text = "#DYNAMIC_IMPLEMENTATION\n"
+        project
+                .getConfigurations()
+                .getByName("dynamicImplementation")
+                .resolvedConfiguration
+                .firstLevelModuleDependencies
+                .each {
+                    file.text += it.moduleGroup + "\\:" + it.moduleName + "=" + it.moduleVersion + "\n"
+                }
+        file.text += "#DYNAMIC_RUNTIME\n"
+        from(file)
+    }
+}
+
