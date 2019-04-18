@@ -5,8 +5,16 @@ plugins {
 group 'pl.mendroch'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 12
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 
-repositories {
-    mavenCentral()
+    sourceCompatibility = 12
+    targetCompatibility = 12
+
+    configurations {
+        dynamicImplementation
+        implementation.extendsFrom dynamicImplementation
+    }
 }
