@@ -7,6 +7,7 @@ version '1.0-SNAPSHOT'
 
 dependencies {
     dynamicImplementation project(':example:service')
+    dynamicImplementation "org.apache.commons:commons-lang3:3.1"
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
@@ -21,9 +22,7 @@ jar {
         resFile.mkdirs()
         def file = new File(resFile, 'dependencies.properties')
         file.text = "#DYNAMIC_IMPLEMENTATION\n"
-        project
-                .getConfigurations()
-                .getByName("dynamicImplementation")
+        configurations.dynamicImplementation
                 .resolvedConfiguration
                 .firstLevelModuleDependencies
                 .each {
@@ -31,5 +30,10 @@ jar {
                 }
         file.text += "#DYNAMIC_RUNTIME\n"
         from(file)
+    }
+    manifest {
+        attributes(
+                "Specification-Version": version
+        )
     }
 }

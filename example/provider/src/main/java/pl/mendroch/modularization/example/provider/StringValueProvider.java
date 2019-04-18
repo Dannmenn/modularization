@@ -1,10 +1,11 @@
 package pl.mendroch.modularization.example.provider;
 
+import org.apache.commons.lang3.StringUtils;
 import pl.mendroch.modularization.example.service.ValueProvider;
 
 public class StringValueProvider implements ValueProvider<String> {
     @Override
     public String provide() {
-        return "StringValueProvider:TEXT";
+        return StringUtils.center("StringValueProvider", 50, "*");
     }
 }

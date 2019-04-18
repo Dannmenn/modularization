@@ -6,17 +6,11 @@ import java.util.jar.Manifest;
 
 public class ModuleJarInfoBuilder {
     private Manifest manifest;
-    private Runtime.Version version;
     private Properties dependencies;
     private ModuleDescriptor descriptor;
 
     public ModuleJarInfoBuilder setManifest(Manifest manifest) {
         this.manifest = manifest;
-        return this;
-    }
-
-    public ModuleJarInfoBuilder setVersion(Runtime.Version version) {
-        this.version = version;
         return this;
     }
 
@@ -31,6 +25,6 @@ public class ModuleJarInfoBuilder {
     }
 
     public ModuleJarInfo createModuleJarInfo() {
-        return new ModuleJarInfo(manifest, version, dependencies, descriptor);
+        return new ModuleJarInfo(manifest, dependencies, descriptor);
     }
 }

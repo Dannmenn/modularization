@@ -31,5 +31,10 @@ jar {
         file.text += "#DYNAMIC_RUNTIME\n"
         from(file)
     }
+    manifest {
+        attributes(
+                "Specification-Version": version
+        )
+    }
 }
 

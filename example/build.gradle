@@ -13,6 +13,7 @@ application {
 dependencies {
     implementation project("service")
     dynamicImplementation project("provider")
+    dynamicImplementation "org.apache.commons:commons-lang3:3.3.2"
 }
 
 compileJava {
@@ -41,5 +42,10 @@ jar {
                 }
         file.text += "#DYNAMIC_RUNTIME\n"
         from(file)
+    }
+    manifest {
+        attributes(
+                "Specification-Version": version
+        )
     }
 }
