@@ -41,6 +41,7 @@ public final class JarInfoLoader {
             Attributes mainAttributes = manifest.getMainAttributes();
             return jarInfoBuilder()
                     .setFileName(path.getFileName().toString())
+                    .setName(mainAttributes.getValue("Name"))
                     .setMainClass(mainAttributes.getValue(MAIN_CLASS))
                     .setSpecificationTitle(mainAttributes.getValue(SPECIFICATION_TITLE))
                     .setSpecificationVersion(mainAttributes.getValue(SPECIFICATION_VERSION))

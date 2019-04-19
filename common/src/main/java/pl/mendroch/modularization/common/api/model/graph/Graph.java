@@ -9,6 +9,10 @@ import java.util.Map.Entry;
 public class Graph<V> {
     private final Map<Vertex<V>, List<Vertex<V>>> edges = new HashMap<>();
 
+    public static <T> Builder<T> builder() {
+        return new Builder<>();
+    }
+
     public void addVertex(Vertex<V> vertex) {
         addVertexInternal(vertex);
     }
@@ -25,11 +29,11 @@ public class Graph<V> {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         for (Entry<Vertex<V>, List<Vertex<V>>> entry : edges.entrySet()) {
-            builder.append(entry.getKey()).append("->[");
-            for (Vertex vertex : entry.getValue()) {
-                builder.append(vertex);
-            }
-            builder.append("]");
+            builder
+                    .append(entry.getKey())
+                    .append("->")
+                    .append(entry.getValue())
+                    .append("\n");
         }
         return builder.toString();
     }

@@ -33,6 +33,7 @@ jar {
     }
     manifest {
         attributes(
+                "Name": project.group + ":" + project.name,
                 "Specification-Version": version
         )
     }

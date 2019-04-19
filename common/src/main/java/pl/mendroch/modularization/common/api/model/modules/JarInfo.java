@@ -1,18 +1,24 @@
 package pl.mendroch.modularization.common.api.model.modules;
 
 public class JarInfo {
-    final String fileName;
-    final String SpecificationTitle;
-    final String SpecificationVersion;
-    final String ImplementationVersion;
-    final String MainClass;
+    private final String name;
+    private final String fileName;
+    private final String specificationTitle;
+    private final String specificationVersion;
+    private final String implementationVersion;
+    private final String mainClass;
 
-    JarInfo(String fileName, String specificationTitle, String specificationVersion, String implementationVersion, String mainClass) {
+    JarInfo(String name, String fileName, String specificationTitle, String specificationVersion, String implementationVersion, String mainClass) {
+        this.name = name;
         this.fileName = fileName;
-        SpecificationTitle = specificationTitle;
-        SpecificationVersion = specificationVersion;
-        ImplementationVersion = implementationVersion;
-        MainClass = mainClass;
+        this.specificationTitle = specificationTitle;
+        this.specificationVersion = specificationVersion;
+        this.implementationVersion = implementationVersion;
+        this.mainClass = mainClass;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getFileName() {
@@ -20,23 +26,23 @@ public class JarInfo {
     }
 
     public String getSpecificationTitle() {
-        return SpecificationTitle;
+        return specificationTitle;
     }
 
     public String getSpecificationVersion() {
-        return SpecificationVersion;
+        return specificationVersion;
     }
 
     public String getImplementationVersion() {
-        return ImplementationVersion;
+        return implementationVersion;
     }
 
     public String getMainClass() {
-        return MainClass;
+        return mainClass;
     }
 
     @Override
     public String toString() {
-        return fileName + ":" + SpecificationVersion;
+        return name + ":" + specificationVersion;
     }
 }

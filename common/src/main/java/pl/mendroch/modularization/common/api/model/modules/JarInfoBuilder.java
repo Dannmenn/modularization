@@ -1,6 +1,7 @@
 package pl.mendroch.modularization.common.api.model.modules;
 
 public class JarInfoBuilder {
+    private String name;
     private String fileName;
     private String specificationTitle;
     private String specificationVersion;
@@ -12,6 +13,11 @@ public class JarInfoBuilder {
 
     public static JarInfoBuilder jarInfoBuilder() {
         return new JarInfoBuilder();
+    }
+
+    public JarInfoBuilder setName(String name) {
+        this.name = name;
+        return this;
     }
 
     public JarInfoBuilder setFileName(String fileName) {
@@ -40,6 +46,6 @@ public class JarInfoBuilder {
     }
 
     public JarInfo createJarInfo() {
-        return new JarInfo(fileName, specificationTitle, specificationVersion, implementationVersion, mainClass);
+        return new JarInfo(name, fileName, specificationTitle, specificationVersion, implementationVersion, mainClass);
     }
 }
