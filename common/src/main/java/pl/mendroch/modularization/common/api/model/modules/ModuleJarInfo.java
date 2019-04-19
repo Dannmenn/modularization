@@ -1,4 +1,4 @@
-package pl.mendroch.modularization.common.api.model;
+package pl.mendroch.modularization.common.api.model.modules;
 
 import java.lang.module.ModuleDescriptor;
 import java.util.Objects;

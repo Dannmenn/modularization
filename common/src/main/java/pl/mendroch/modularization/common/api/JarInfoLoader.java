@@ -1,9 +1,9 @@
 package pl.mendroch.modularization.common.api;
 
-import pl.mendroch.modularization.common.api.model.Dependency;
-import pl.mendroch.modularization.common.api.model.JarInfo;
-import pl.mendroch.modularization.common.api.model.ModuleJarInfo;
-import pl.mendroch.modularization.common.api.model.ModuleJarInfoBuilder;
+import pl.mendroch.modularization.common.api.model.modules.Dependency;
+import pl.mendroch.modularization.common.api.model.modules.JarInfo;
+import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
+import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfoBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 import static java.util.jar.Attributes.Name.*;
-import static pl.mendroch.modularization.common.api.model.JarInfoBuilder.jarInfoBuilder;
+import static pl.mendroch.modularization.common.api.model.modules.JarInfoBuilder.jarInfoBuilder;
 
 public final class JarInfoLoader {
     private JarInfoLoader() {
@@ -66,20 +66,21 @@ public final class JarInfoLoader {
         for (ModuleReference reference : references) {
             builder.setDescriptor(reference.descriptor());
         }
-        builder.setJarInfo(readJarFile(path, jarFile -> {
-            try {
-                ZipEntry entry = getDependenciesEntry(jarFile);
-                if (entry != null) {
-                    try (InputStream inputStream = jarFile.getInputStream(entry)) {
-                        Properties dependencies = new Properties();
-                        dependencies.load(inputStream);
-                        builder.setDependencies(convertPropertiesToDependencies(dependencies));
+        builder.setJarInfo(
+                readJarFile(path, jarFile -> {
+                    try {
+                        ZipEntry entry = getDependenciesEntry(jarFile);
+                        if (entry != null) {
+                            try (InputStream inputStream = jarFile.getInputStream(entry)) {
+                                Properties dependencies = new Properties();
+                                dependencies.load(inputStream);
+                                builder.setDependencies(convertPropertiesToDependencies(dependencies));
+                            }
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e.getMessage(), e);
                     }
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e.getMessage(), e);
-            }
-        }));
+                }));
         return builder.createModuleJarInfo();
     }
 

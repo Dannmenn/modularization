@@ -1,7 +1,7 @@
 package pl.mendroch.modularization.common.api;
 
 import org.junit.Test;
-import pl.mendroch.modularization.common.api.model.ModuleJarInfo;
+import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
 
 import java.io.File;
 import java.io.IOException;
