@@ -12,7 +12,7 @@ application {
 
 dependencies {
     implementation project("service")
-    dynamicImplementation project("provider")
+//    dynamicImplementation project("provider")
     dynamicImplementation "org.apache.commons:commons-lang3:3.3.2"
 }
 

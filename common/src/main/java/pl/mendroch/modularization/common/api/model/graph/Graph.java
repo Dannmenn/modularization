@@ -1,10 +1,9 @@
 package pl.mendroch.modularization.common.api.model.graph;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
+
+import static java.util.Collections.emptyList;
 
 public class Graph<V> {
     private final Map<Vertex<V>, List<Vertex<V>>> edges = new HashMap<>();
@@ -23,6 +22,14 @@ public class Graph<V> {
 
     private List<Vertex<V>> addVertexInternal(Vertex<V> vertex) {
         return edges.computeIfAbsent(vertex, v -> new ArrayList<>());
+    }
+
+    public Set<Vertex<V>> getVertices() {
+        return edges.keySet();
+    }
+
+    public List<Vertex<V>> getEdges(Vertex<V> vertex) {
+        return edges.getOrDefault(vertex, emptyList());
     }
 
     @Override
