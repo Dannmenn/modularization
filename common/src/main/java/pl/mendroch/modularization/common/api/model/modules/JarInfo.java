@@ -1,5 +1,7 @@
 package pl.mendroch.modularization.common.api.model.modules;
 
+import java.util.Objects;
+
 public class JarInfo {
     private final String name;
     private final String fileName;
@@ -39,6 +41,21 @@ public class JarInfo {
 
     public String getMainClass() {
         return mainClass;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JarInfo jarInfo = (JarInfo) o;
+        return name.equals(jarInfo.name) &&
+                specificationVersion.equals(jarInfo.specificationVersion) &&
+                implementationVersion.equals(jarInfo.implementationVersion);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, specificationVersion, implementationVersion);
     }
 
     @Override

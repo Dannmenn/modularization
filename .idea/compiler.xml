@@ -2,8 +2,14 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="modularization.application.console-application.main" target="12" />
+      <module name="modularization.application.console-application.test" target="12" />
+      <module name="modularization.application.main" target="12" />
+      <module name="modularization.application.test" target="12" />
       <module name="modularization.common.main" target="12" />
       <module name="modularization.common.test" target="12" />
+      <module name="modularization.console-application.main" target="1.8" />
+      <module name="modularization.console-application.test" target="1.8" />
       <module name="modularization.core.main" target="12" />
       <module name="modularization.core.test" target="12" />
       <module name="modularization.example.main" target="12" />

@@ -7,7 +7,7 @@ group 'pl.mendroch.modularization.test'
 version '1.0-SNAPSHOT'
 
 application {
-    mainClassName = "pl.mendroch.modularization.example/pl.mendroch.modularization.example.ExampleEntryPoint"
+    mainClassName = "pl.mendroch.modularization.example.ExampleChild"
 }
 
 dependencies {

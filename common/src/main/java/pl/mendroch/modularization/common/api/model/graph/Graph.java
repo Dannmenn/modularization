@@ -5,10 +5,11 @@ import java.util.Map.Entry;
 
 import static java.util.Collections.emptyList;
 
-public class Graph<V> {
+public class Graph<K, V> {
     private final Map<Vertex<V>, List<Vertex<V>>> edges = new HashMap<>();
+    private Map<V, K> mapper;
 
-    public static <T> Builder<T> builder() {
+    public static <S, T> Builder<S, T> builder() {
         return new Builder<>();
     }
 
@@ -22,6 +23,10 @@ public class Graph<V> {
 
     private List<Vertex<V>> addVertexInternal(Vertex<V> vertex) {
         return edges.computeIfAbsent(vertex, v -> new ArrayList<>());
+    }
+
+    public Map<V, K> getMapper() {
+        return mapper;
     }
 
     public Set<Vertex<V>> getVertices() {
@@ -45,8 +50,13 @@ public class Graph<V> {
         return builder.toString();
     }
 
-    public static class Builder<T> {
-        private final Graph<T> graph = new Graph<>();
+    public static class Builder<S, T> {
+        private final Graph<S, T> graph = new Graph<>();
+
+        public Builder dependencyMapper(Map<T, S> mapper) {
+            graph.mapper = mapper;
+            return this;
+        }
 
         public Builder addVertex(Vertex<T> vertex) {
             graph.addVertexInternal(vertex);
@@ -58,7 +68,7 @@ public class Graph<V> {
             return this;
         }
 
-        public Graph<T> createGraph() {
+        public Graph<S, T> createGraph() {
             return graph;
         }
     }

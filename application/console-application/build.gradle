@@ -1,0 +1,17 @@
+plugins {
+    id 'java'
+}
+
+group 'pl.mendroch.modularization'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 12
+targetCompatibility = 12
+
+dependencies {
+    implementation project(':application')
+}
+
+compileJava {
+    options.compilerArgs.addAll("--module-path", classpath.asPath)
+}

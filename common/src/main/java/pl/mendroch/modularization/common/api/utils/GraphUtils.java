@@ -5,6 +5,7 @@ import pl.mendroch.modularization.common.api.model.graph.Vertex;
 
 public final class GraphUtils {
     private GraphUtils() {
+        //Hide implicit constructor
     }
 
     public static boolean isCyclic(Graph graph, Vertex entry) {

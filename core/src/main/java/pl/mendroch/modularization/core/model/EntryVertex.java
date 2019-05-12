@@ -1,9 +1,9 @@
 package pl.mendroch.modularization.core.model;
 
 import pl.mendroch.modularization.common.api.model.graph.Vertex;
-import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
+import pl.mendroch.modularization.common.api.model.modules.Dependency;
 
-public class EntryVertex extends Vertex<ModuleJarInfo> {
+public class EntryVertex extends Vertex<Dependency> {
     public EntryVertex() {
         super(null);
     }

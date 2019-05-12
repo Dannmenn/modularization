@@ -2,7 +2,15 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/application.iml" filepath="$PROJECT_DIR$/.idea/modules/application.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/console-application.iml" filepath="$PROJECT_DIR$/.idea/modules/console-application.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/modularization.iml" filepath="$PROJECT_DIR$/.idea/modules/modularization.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/application/modularization.application.iml" filepath="$PROJECT_DIR$/.idea/modules/application/modularization.application.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/application/console-application/modularization.application.console-application.iml" filepath="$PROJECT_DIR$/.idea/modules/application/console-application/modularization.application.console-application.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/application/console-application/modularization.application.console-application.main.iml" filepath="$PROJECT_DIR$/.idea/modules/application/console-application/modularization.application.console-application.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/application/console-application/modularization.application.console-application.test.iml" filepath="$PROJECT_DIR$/.idea/modules/application/console-application/modularization.application.console-application.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/application/modularization.application.main.iml" filepath="$PROJECT_DIR$/.idea/modules/application/modularization.application.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/application/modularization.application.test.iml" filepath="$PROJECT_DIR$/.idea/modules/application/modularization.application.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/modularization.common.iml" filepath="$PROJECT_DIR$/.idea/modules/common/modularization.common.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/modularization.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common/modularization.common.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/modularization.common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/common/modularization.common.test.iml" />
