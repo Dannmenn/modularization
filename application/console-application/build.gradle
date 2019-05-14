@@ -2,6 +2,8 @@ plugins {
     id 'java'
 }
 
+ext.moduleName='pl.mendroch.modularization.application.console'
+
 group 'pl.mendroch.modularization'
 version '1.0-SNAPSHOT'
 
@@ -13,5 +15,11 @@ dependencies {
 }
 
 compileJava {
-    options.compilerArgs.addAll("--module-path", classpath.asPath)
+    inputs.property("moduleName", moduleName)
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath,
+        ]
+        classpath = files()
+    }
 }

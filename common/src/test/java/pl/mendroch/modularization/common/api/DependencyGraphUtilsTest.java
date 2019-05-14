@@ -28,7 +28,7 @@ public class DependencyGraphUtilsTest {
         Path directory = new File(getClass().getResource("/libs").getFile()).toPath();
         List<ModuleJarInfo> moduleJarInfos = loadModulesInformation(directory);
 
-        Graph<Dependency> graph = createDependencyGraph(moduleJarInfos);
+        Graph<ModuleJarInfo, Dependency> graph = createDependencyGraph(moduleJarInfos);
 
         assertNotNull(graph);
         assertEquals(

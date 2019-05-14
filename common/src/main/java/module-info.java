@@ -1,7 +1,6 @@
-import pl.mendroch.modularization.common.api.annotation.TODO;
 import pl.mendroch.modularization.common.api.health.HealthEventListener;
 
-@TODO("CONFIGURATION - export internal to project modules")
+//TODO CONFIGURATION - export internal to project modules
 module pl.mendroch.modularization.common {
     uses HealthEventListener;
     requires java.logging;

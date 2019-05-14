@@ -1,6 +1,7 @@
 package pl.mendroch.modularization.common.api.model.tree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,15 +20,20 @@ public class Node<V> {
         this.children.addAll(children);
     }
 
+    @SafeVarargs
+    public static <T> Node<T> node(T value, Node<T>... children) {
+        return new Node<>(value, new ArrayList<>(Arrays.asList(children)));
+    }
+
     public V getValue() {
         return value;
     }
 
-    public void addChildren(Node<V> node) {
+    public void addChild(Node<V> node) {
         children.add(node);
     }
 
-    public void removeChildren(Node<V> node) {
+    public void removeChild(Node<V> node) {
         children.remove(node);
     }
 
@@ -46,5 +52,10 @@ public class Node<V> {
     @Override
     public int hashCode() {
         return Objects.hash(value);
+    }
+
+    @Override
+    public String toString() {
+        return value.toString() + "\n" + children;
     }
 }

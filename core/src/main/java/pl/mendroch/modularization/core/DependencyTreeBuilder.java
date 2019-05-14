@@ -6,8 +6,6 @@ import pl.mendroch.modularization.common.api.model.modules.Dependency;
 import pl.mendroch.modularization.common.api.model.modules.JarInfo;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
 import pl.mendroch.modularization.common.api.model.tree.Node;
-import pl.mendroch.modularization.common.api.model.tree.Root;
-import pl.mendroch.modularization.core.model.EntryVertex;
 
 import java.lang.module.ModuleDescriptor.Version;
 import java.util.HashMap;
@@ -20,11 +18,11 @@ import static pl.mendroch.modularization.common.api.utils.GraphUtils.isCyclic;
 public class DependencyTreeBuilder {
     private final Graph<ModuleJarInfo, Dependency> graph;
     private final Map<Dependency, ModuleJarInfo> mapper;
-    private final Root<ModuleJarInfo> root = new Root<>();
     private final Set<Dependency> jars = new HashSet<>();
     private final Set<JarInfo> unused = new HashSet<>();
     private final Set<JarInfo> obsolete = new HashSet<>();
-    private final EntryVertex entry = new EntryVertex();
+    private Node<ModuleJarInfo> root;
+    private Vertex<Dependency> entry;
 
     public DependencyTreeBuilder(Graph<ModuleJarInfo, Dependency> graph) {
         this.graph = graph;
@@ -43,6 +41,7 @@ public class DependencyTreeBuilder {
 
     private void buildGraph() {
         Map<ModuleJarInfo, Node<ModuleJarInfo>> nodes = new HashMap<>();
+        root = new Node<>(mapper.get(entry.getValue()));
         buildGraphNodes(nodes, root, entry);
     }
 
@@ -53,7 +52,7 @@ public class DependencyTreeBuilder {
             boolean visited = nodes.containsKey(jarInfo);
             jars.add(dependency);
             Node<ModuleJarInfo> node = nodes.computeIfAbsent(jarInfo, Node::new);
-            root.addChildren(node);
+            root.addChild(node);
             if (!visited) {
                 buildGraphNodes(nodes, node, edge);
             }
@@ -90,11 +89,11 @@ public class DependencyTreeBuilder {
     }
 
     private void initializeGraphWithEntryPoint() {
-        graph.addVertex(entry);
         for (Vertex<Dependency> vertex : graph.getVertices()) {
             String mainClass = mapper.get(vertex.getValue()).getJarInfo().getMainClass();
             if (mainClass != null && !mainClass.isBlank()) {
-                graph.addEdge(entry, vertex);
+                assert entry != null : "Using multiple modules with main method is not supported";
+                entry = vertex;
             }
         }
     }
@@ -103,7 +102,7 @@ public class DependencyTreeBuilder {
         return graph;
     }
 
-    public Root<ModuleJarInfo> getRoot() {
+    public Node<ModuleJarInfo> getRoot() {
         return root;
     }
 

@@ -14,10 +14,10 @@ dependencies {
 compileJava {
     options.compilerArgs.addAll(
             "--module-path", classpath.asPath,
-            "--add-opens", "java.base=pl.mendroch.modularization.example.main",
-            "--add-opens", "java.base/jdk.internal.loader=pl.mendroch.modularization.example.main",
-            "--add-exports", "java.base=pl.mendroch.modularization.example.main",
-            "--add-exports", "java.base/jdk.internal.loader=pl.mendroch.modularization.example.main"
+//            "--add-opens", "java.base=pl.mendroch.modularization.example.main",
+//            "--add-opens", "java.base/jdk.internal.loader=pl.mendroch.modularization.example.main",
+//            "--add-exports", "java.base=pl.mendroch.modularization.example.main",
+//            "--add-exports", "java.base/jdk.internal.loader=pl.mendroch.modularization.example.main"
     )
 }
 

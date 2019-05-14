@@ -2,6 +2,8 @@ plugins {
     id 'java'
 }
 
+ext.moduleName='pl.mendroch.modularization.application'
+
 group 'pl.mendroch.modularization'
 version '1.0-SNAPSHOT'
 
@@ -15,4 +17,14 @@ repositories {
 dependencies {
     implementation project(':common')
     implementation project(':core')
+}
+
+compileJava {
+    inputs.property("moduleName", moduleName)
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath,
+        ]
+        classpath = files()
+    }
 }

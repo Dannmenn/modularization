@@ -4,6 +4,6 @@ module pl.mendroch.modularization.application {
     requires java.logging;
     requires pl.mendroch.modularization.common;
     requires pl.mendroch.modularization.core;
-    exports pl.mendroch.modularization.application.internal to pl.mendroch.modularization.application.console;
+    exports pl.mendroch.modularization.application.internal;
     exports pl.mendroch.modularization.application.api;
 }

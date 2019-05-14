@@ -7,7 +7,7 @@ import pl.mendroch.modularization.application.internal.ApplicationArgumentName;
 import pl.mendroch.modularization.common.api.model.graph.Graph;
 import pl.mendroch.modularization.common.api.model.modules.Dependency;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
-import pl.mendroch.modularization.common.api.model.tree.Root;
+import pl.mendroch.modularization.common.api.model.tree.Node;
 import pl.mendroch.modularization.common.internal.concurrent.ConcurrencyUtil;
 import pl.mendroch.modularization.core.DependencyTreeBuilder;
 import pl.mendroch.modularization.core.runtime.RuntimeManager;
@@ -83,7 +83,7 @@ public class ApplicationLoader {
         LOGGER.warning("Unused dependencies:" + dependencyTreeBuilder.getUnused());
         LOGGER.info("Obsolete dependencies:" + dependencyTreeBuilder.getObsolete());
         LOGGER.info("Building module graph");
-        Root<ModuleJarInfo> root = dependencyTreeBuilder.getRoot();
+        Node<ModuleJarInfo> root = dependencyTreeBuilder.getRoot();
         runtimeManager.setRoot(root);
         if (loader != null) loader.afterLoad();
     }

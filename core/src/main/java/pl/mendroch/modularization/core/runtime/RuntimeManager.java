@@ -2,7 +2,7 @@ package pl.mendroch.modularization.core.runtime;
 
 import pl.mendroch.modularization.common.api.annotation.TODO;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
-import pl.mendroch.modularization.common.api.model.tree.Root;
+import pl.mendroch.modularization.common.api.model.tree.Node;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ public enum RuntimeManager {
     private final Map<ModuleJarInfo, ClassLoader> entryPoints = new HashMap<>();
     private final ExecutorService executor = newCachedThreadPool(threadFactory("runtime-manager"));
 
-    public void setRoot(Root<ModuleJarInfo> root) {
+    public void setRoot(Node<ModuleJarInfo> root) {
         if (initialized.getAndSet(true)) {
             buildModulesGraph(root);
         } else {
@@ -34,12 +34,12 @@ public enum RuntimeManager {
     }
 
     @TODO
-    private void updateModulesGraph(Root<ModuleJarInfo> root) {
+    private void updateModulesGraph(Node<ModuleJarInfo> root) {
         throw new UnsupportedOperationException("TODO");
     }
 
     @TODO
-    private void buildModulesGraph(Root<ModuleJarInfo> root) {
+    private void buildModulesGraph(Node<ModuleJarInfo> root) {
     }
 
     public void run() {
