@@ -42,6 +42,7 @@ public final class JarInfoLoader {
             Manifest manifest = jarFile.getManifest();
             Attributes mainAttributes = manifest.getMainAttributes();
             return jarInfoBuilder()
+                    .setPath(path)
                     .setFileName(path.getFileName().toString())
                     .setName(mainAttributes.getValue("Name"))
                     .setMainClass(mainAttributes.getValue(MAIN_CLASS))

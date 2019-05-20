@@ -8,6 +8,7 @@ import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -28,7 +29,7 @@ public class DependencyGraphUtilsTest {
         Path directory = new File(getClass().getResource("/libs").getFile()).toPath();
         List<ModuleJarInfo> moduleJarInfos = loadModulesInformation(directory);
 
-        Graph<ModuleJarInfo, Dependency> graph = createDependencyGraph(moduleJarInfos);
+        Graph<ModuleJarInfo, Dependency> graph = createDependencyGraph(moduleJarInfos, new HashMap<>());
 
         assertNotNull(graph);
         assertEquals(

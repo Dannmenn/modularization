@@ -1,17 +1,20 @@
 package pl.mendroch.modularization.common.api.model.modules;
 
+import java.nio.file.Path;
 import java.util.Objects;
 
 public class JarInfo {
     private final String name;
+    private final Path path;
     private final String fileName;
     private final String specificationTitle;
     private final String specificationVersion;
     private final String implementationVersion;
     private final String mainClass;
 
-    JarInfo(String name, String fileName, String specificationTitle, String specificationVersion, String implementationVersion, String mainClass) {
+    JarInfo(String name, Path path, String fileName, String specificationTitle, String specificationVersion, String implementationVersion, String mainClass) {
         this.name = name;
+        this.path = path;
         this.fileName = fileName;
         this.specificationTitle = specificationTitle;
         this.specificationVersion = specificationVersion;
@@ -21,6 +24,10 @@ public class JarInfo {
 
     public String getName() {
         return name;
+    }
+
+    public Path getPath() {
+        return path;
     }
 
     public String getFileName() {

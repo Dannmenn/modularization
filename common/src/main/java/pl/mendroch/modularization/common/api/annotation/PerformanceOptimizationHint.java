@@ -6,8 +6,7 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-@Target({TYPE, CONSTRUCTOR, METHOD, MODULE})
+@Target({TYPE, METHOD, FIELD})
 @Retention(SOURCE)
-public @interface TODO {
-    String value() default "";
+public @interface PerformanceOptimizationHint {
 }

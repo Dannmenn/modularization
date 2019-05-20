@@ -22,7 +22,7 @@ public final class DependencyGraphUtils {
         //Hide implicit constructor
     }
 
-    public static Graph<ModuleJarInfo, Dependency> createDependencyGraph(Collection<ModuleJarInfo> modules) {
+    public static Graph<ModuleJarInfo, Dependency> createDependencyGraph(Collection<ModuleJarInfo> modules, Map<Dependency, Dependency> overrides) {
         Builder<ModuleJarInfo, Dependency> builder = Graph.builder();
         Map<ModuleJarInfo, Dependency> mapper = new HashMap<>();
         for (ModuleJarInfo module : modules) {
@@ -30,14 +30,14 @@ public final class DependencyGraphUtils {
             Vertex<Dependency> moduleVertex = vertexOf(moduleDependency);
             builder.addVertex(moduleVertex);
             for (Dependency dependency : module.getDependencies()) {
-                builder.addEdge(moduleVertex, vertexOf(dependency));
+                builder.addEdge(moduleVertex, vertexOf(overrides.getOrDefault(dependency, dependency)));
             }
         }
         builder.dependencyMapper(mapper.entrySet().stream().collect(toMap(Entry::getValue, Entry::getKey)));
         return builder.createGraph();
     }
 
-    private static Dependency convertModuleToDependency(ModuleJarInfo module) {
+    public static Dependency convertModuleToDependency(ModuleJarInfo module) {
         JarInfo jarInfo = module.getJarInfo();
         String name = jarInfo.getName();
         String[] parts = name.split(":");

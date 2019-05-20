@@ -10,7 +10,6 @@ import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
 import pl.mendroch.modularization.common.api.model.tree.Node;
 import pl.mendroch.modularization.common.internal.concurrent.ConcurrencyUtil;
 import pl.mendroch.modularization.core.DependencyTreeBuilder;
-import pl.mendroch.modularization.core.runtime.RuntimeManager;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -33,8 +32,9 @@ import static pl.mendroch.modularization.application.internal.ApplicationArgumen
 import static pl.mendroch.modularization.application.internal.ApplicationArgumentName.PATH;
 import static pl.mendroch.modularization.application.internal.util.ReflectionUtil.createInstanceWithOptionalParameters;
 import static pl.mendroch.modularization.common.api.DependencyGraphUtils.createDependencyGraph;
-import static pl.mendroch.modularization.common.api.JarInfoLoader.loadModulesInformation;
-import static pl.mendroch.modularization.core.runtime.RuntimeManager.INSTANCE;
+import static pl.mendroch.modularization.core.runtime.ModuleFilesManager.MODULE_FILES_MANAGER;
+import static pl.mendroch.modularization.core.runtime.OverrideManager.OVERRIDE_MANAGER;
+import static pl.mendroch.modularization.core.runtime.RuntimeManager.RUNTIME_MANAGER;
 
 public class ApplicationLoader {
     private static final Logger LOGGER = Logger.getLogger(ApplicationLoader.class.getName());
@@ -42,8 +42,6 @@ public class ApplicationLoader {
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private final Map<ApplicationArgumentName, String> parameters;
     private final CustomApplicationLoader loader;
-
-    private final RuntimeManager runtimeManager = INSTANCE;
 
     public ApplicationLoader(Map<ApplicationArgumentName, String> parameters) {
         this.parameters = parameters;
@@ -67,9 +65,10 @@ public class ApplicationLoader {
             try {
                 LOGGER.info("Building dependency graph");
                 Path directory = Paths.get(parameters.get(PATH));
-                List<ModuleJarInfo> moduleJarInfos = loadModulesInformation(directory);
+                MODULE_FILES_MANAGER.initialize(directory);
+                List<ModuleJarInfo> moduleJarInfos = MODULE_FILES_MANAGER.getModules();
 
-                Graph<ModuleJarInfo, Dependency> dependencyGraph = createDependencyGraph(moduleJarInfos);
+                Graph<ModuleJarInfo, Dependency> dependencyGraph = createDependencyGraph(moduleJarInfos, OVERRIDE_MANAGER.getOverrides());
                 LOGGER.fine("Graph:" + System.lineSeparator() + dependencyGraph.toString());
                 return new DependencyTreeBuilder(dependencyGraph);
             } catch (IOException e) {
@@ -80,17 +79,17 @@ public class ApplicationLoader {
         DependencyTreeBuilder dependencyTreeBuilder = treeBuilderFuture.get();
         LOGGER.info("Building dependency tree finished");
 
-        LOGGER.warning("Unused dependencies:" + dependencyTreeBuilder.getUnused());
+        LOGGER.info("Unused dependencies:" + dependencyTreeBuilder.getUnused());
         LOGGER.info("Obsolete dependencies:" + dependencyTreeBuilder.getObsolete());
         LOGGER.info("Building module graph");
         Node<ModuleJarInfo> root = dependencyTreeBuilder.getRoot();
-        runtimeManager.setRoot(root);
+        RUNTIME_MANAGER.initialize(root);
         if (loader != null) loader.afterLoad();
     }
 
     public void run() {
-        assert !runtimeManager.isInitialized() : "Application already started";
-        runtimeManager.run();
+        assert !RUNTIME_MANAGER.isInitialized() : "Application already started";
+        RUNTIME_MANAGER.run();
     }
 
     private <T extends ApplicationConfigurator> List<T> loadServiceProviders(Class<T> aClass) {
@@ -102,6 +101,8 @@ public class ApplicationLoader {
     }
 
     private void runConfigurations(List<? extends ApplicationConfigurator> configurators) {
+        if (configurators.isEmpty()) return;
+
         //Submit first tasks
         submitTasks(
                 configurators.parallelStream()

@@ -7,11 +7,12 @@ group 'pl.mendroch.modularization.test'
 version '1.0-SNAPSHOT'
 
 application {
-    mainClassName = "pl.mendroch.modularization.example.ExampleChild"
+    mainClassName = "pl.mendroch.modularization.example.ExampleEntryPoint"
 }
 
 dependencies {
     implementation project("service")
+    implementation project(":core")
 //    dynamicImplementation project("provider")
     dynamicImplementation "org.apache.commons:commons-lang3:3.3.2"
 }
@@ -46,6 +47,7 @@ jar {
     manifest {
         attributes(
                 "Name": project.group + ":" + project.name,
+                "Main-Class": "pl.mendroch.modularization.example.ExampleEntryPoint",
                 "Specification-Version": version
         )
     }

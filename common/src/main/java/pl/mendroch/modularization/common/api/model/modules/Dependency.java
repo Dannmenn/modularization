@@ -7,6 +7,14 @@ public class Dependency {
     private final String artifact;
     private final String version;
 
+    public Dependency(String text) {
+        String[] firstPart = text.split(":");
+        String[] secondPart = firstPart[1].split("@");
+        this.group = firstPart[0];
+        this.artifact = secondPart[0];
+        this.version = secondPart[1];
+    }
+
     public Dependency(String group, String artifact, String version) {
         this.group = group;
         this.artifact = artifact;
