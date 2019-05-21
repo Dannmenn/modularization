@@ -31,7 +31,7 @@ public enum RuntimeManager {
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final ExecutorService executor = newCachedThreadPool(threadFactory("runtime-manager"));
-    private LoadedModuleReference entryPoint;
+    private LoadedModuleReference[] references;
 
     public void initialize(Node<ModuleJarInfo> root) {
         if (initialized.getAndSet(true)) {
@@ -61,13 +61,15 @@ public enum RuntimeManager {
     }
 
     private void updateRoot(Node<ModuleJarInfo> root) {
-        TODO("Implement");
+        List<ModuleJarInfo> flattened = new GraphFlattener<>(root).flatten();
+        references = new ClasspathUpdater(flattened).updateClassLoaders(references);
+        TODO("invoke on before/after classpath update");
+        TODO("invoke change listeners");
     }
 
     private void buildModulesGraph(Node<ModuleJarInfo> root) {
         List<ModuleJarInfo> flattened = new GraphFlattener<>(root).flatten();
-        LoadedModuleReference[] references = new ClasspathBuilder(flattened).buildClassLoaders();
-        entryPoint = references[0];
+        references = new ClasspathBuilder(flattened).buildClassLoaders();
     }
 
     public void run() {
@@ -75,6 +77,7 @@ public enum RuntimeManager {
             LOGGER.severe("Application already started. Update modules graph instead of reinitializing");
             throw new IllegalStateException("Application already started");
         }
+        final LoadedModuleReference entryPoint = references[0];
         executor.submit(() -> {
             try {
                 String mainClass = entryPoint.getModule().getJarInfo().getMainClass();
