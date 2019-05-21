@@ -28,63 +28,70 @@ class ClasspathUpdater {
 
     LoadedModuleReference[] updateClassLoaders(LoadedModuleReference[] references) {
         LoadedModuleReference[] result = new LoadedModuleReference[modules.size()];
-        Configuration conf = ModuleLayer.boot().configuration();
-        ModuleLayer layer = ModuleLayer.boot();
-        ClassLoader loader = getClass().getClassLoader();
-        int referenceIndex = references.length - 1;
-        for (int i = modules.size() - 1; i >= 0; i--) {
+        LoadedModuleReference parent = new LoadedModuleReferenceMock(ModuleLayer.boot(), getClass().getClassLoader());
+        for (int i = modules.size() - 1, referenceIndex = references.length - 1; i >= 0; i--) {
             ModuleJarInfo module = modules.get(i);
-            int tmp = referenceIndex;
-            while (tmp >= 0) {
-                if (module.equals(references[tmp--].getModule())) {
-                    break;
-                }
-            }
-            if (tmp >= 0) {
-                referenceIndex = tmp - 1;
-                LoadedModuleReference reference = references[tmp];
-                result[i] = reference;
-                Configuration prevConf = conf;
-                ModuleLayer prevLayer = layer;
-                ClassLoader prevLoader = loader;
-                loader = reference.getLoader();
-                if (!loader.getParent().equals(prevLoader)) {
-                    updateField(prevLoader, "parent", ClassLoader.class, loader);
-                    updateField(prevLoader, "parent", Loader.class, loader);
-                    conf = resolveAndBind(
-                            new ModuleFinderDelegate(prevConf),
-                            List.of(prevConf),
-                            ModuleFinder.of(),
-                            List.of(reference.getModuleName())
-                    );
-                    final ClassLoader tmpLoader = loader;
-                    layer = defineModules(conf, List.of(prevLayer), mn -> tmpLoader).layer();
-                    updateField(new ConcurrentHashMap<String, ClassLoader>(), "remotePackageToLoader", Loader.class, loader);
-                    ((Loader) loader).initRemotePackageMap(prevConf, List.of(prevLayer));
-                    result[i] = new LoadedModuleReference(
-                            reference.getModuleName(), reference.getModule(), conf, layer, loader
-                    );
-                } else {
-                    result[i] = reference;
-                    conf = reference.getConfiguration();
-                    layer = reference.getLayer();
-                    loader = reference.getLoader();
-                }
+            int tmpIndex = findModule(references, referenceIndex, module);
+            if (tmpIndex >= 0) {
+                referenceIndex = tmpIndex - 1;
+                result[i] = useExistingClassLoader(references[tmpIndex], parent);
             } else {
-                String moduleName = module.getDescriptor().name();
-                JarInfo jarInfo = module.getJarInfo();
-                conf = resolveAndBind(
-                        ModuleFinder.of(jarInfo.getPath()),
-                        List.of(conf),
-                        ModuleFinder.of(),
-                        List.of(moduleName)
-                );
-                layer = layer.defineModulesWithOneLoader(conf, loader);
-                loader = layer.findLoader(moduleName);
-                result[i] = new LoadedModuleReference(moduleName, module, conf, layer, loader);
+                result[i] = createNewModuleReference(parent, module);
             }
+            parent = result[i];
         }
         return result;
+    }
+
+    private LoadedModuleReference createNewModuleReference(LoadedModuleReference parent, ModuleJarInfo module) {
+        String moduleName = module.getDescriptor().name();
+        JarInfo jarInfo = module.getJarInfo();
+        Configuration conf = resolveAndBind(
+                ModuleFinder.of(jarInfo.getPath()),
+                List.of(parent.getConfiguration()),
+                ModuleFinder.of(),
+                List.of(moduleName)
+        );
+        ModuleLayer layer = parent.getLayer().defineModulesWithOneLoader(conf, parent.getLoader());
+        ClassLoader loader = layer.findLoader(moduleName);
+        return new LoadedModuleReference(moduleName, module, conf, layer, loader);
+    }
+
+    private LoadedModuleReference useExistingClassLoader(LoadedModuleReference reference, LoadedModuleReference parent) {
+        ClassLoader loader = reference.getLoader();
+        if (loader.getParent().equals(parent.getLoader())) {
+            return reference;
+        }
+        return recreateLoadedModuleReference(parent, reference);
+    }
+
+    private LoadedModuleReference recreateLoadedModuleReference(LoadedModuleReference parent, LoadedModuleReference current) {
+        ClassLoader loader = current.getLoader();
+        updateField(parent.getLoader(), "parent", ClassLoader.class, loader);
+        updateField(parent.getLoader(), "parent", Loader.class, loader);
+        Configuration conf = resolveAndBind(
+                new ModuleFinderDelegate(parent.getConfiguration()),
+                List.of(parent.getConfiguration()),
+                ModuleFinder.of(),
+                List.of(current.getModuleName())
+        );
+        final ClassLoader tmpLoader = loader;
+        ModuleLayer layer = defineModules(conf, List.of(parent.getLayer()), mn -> tmpLoader).layer();
+        updateField(new ConcurrentHashMap<String, ClassLoader>(), "remotePackageToLoader", Loader.class, loader);
+        ((Loader) loader).initRemotePackageMap(parent.getConfiguration(), List.of(parent.getLayer()));
+        return new LoadedModuleReference(
+                current.getModuleName(), current.getModule(), conf, layer, loader
+        );
+    }
+
+    private int findModule(LoadedModuleReference[] references, int referenceIndex, ModuleJarInfo module) {
+        int tmpIndex = referenceIndex;
+        while (tmpIndex >= 0) {
+            if (module.equals(references[tmpIndex--].getModule())) {
+                break;
+            }
+        }
+        return tmpIndex;
     }
 
     private void updateField(Object value, String name, Class<?> aClass, Object object) {
@@ -92,6 +99,12 @@ class ClasspathUpdater {
         long offset;
         offset = unsafe.objectFieldOffset(aClass, name);
         unsafe.compareAndSetReference(object, offset, null, value);
+    }
+
+    private static class LoadedModuleReferenceMock extends LoadedModuleReference {
+        private LoadedModuleReferenceMock(ModuleLayer layer, ClassLoader loader) {
+            super(null, null, layer.configuration(), layer, loader);
+        }
     }
 
     private static class ModuleFinderDelegate implements ModuleFinder {
