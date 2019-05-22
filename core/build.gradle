@@ -23,6 +23,8 @@ compileJava {
     inputs.property("moduleName", moduleName)
     doFirst {
         options.compilerArgs = [
+                '--add-exports', 'java.base/jdk.internal.loader=pl.mendroch.modularization.core',
+                '--add-exports', 'java.base/jdk.internal.misc=pl.mendroch.modularization.core',
                 '--module-path', classpath.asPath,
         ]
         classpath = files()

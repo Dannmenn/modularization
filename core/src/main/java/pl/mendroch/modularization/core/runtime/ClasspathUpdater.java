@@ -10,16 +10,21 @@ import java.lang.module.Configuration;
 import java.lang.module.ModuleFinder;
 import java.lang.module.ModuleReference;
 import java.lang.module.ResolvedModule;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
-import static java.lang.ModuleLayer.defineModules;
 import static java.lang.module.Configuration.resolveAndBind;
+import static java.util.Collections.emptyList;
+import static java.util.logging.Level.SEVERE;
 import static java.util.stream.Collectors.toSet;
 
 class ClasspathUpdater {
+    private static final Logger LOGGER = Logger.getLogger(ClasspathUpdater.class.getName());
+
     private final List<ModuleJarInfo> modules;
 
     ClasspathUpdater(List<ModuleJarInfo> modules) {
@@ -67,18 +72,21 @@ class ClasspathUpdater {
 
     private LoadedModuleReference recreateLoadedModuleReference(LoadedModuleReference parent, LoadedModuleReference current) {
         ClassLoader loader = current.getLoader();
-        updateField(parent.getLoader(), "parent", ClassLoader.class, loader);
-        updateField(parent.getLoader(), "parent", Loader.class, loader);
+        updateParentFieldWithUnsafe(parent.getLoader(), ClassLoader.class, loader);
+        updateParentFieldWithUnsafe(parent.getLoader(), Loader.class, loader);
+        Configuration configuration = current.getConfiguration();
+        updateFieldWithReflection(emptyList(), "parents", Configuration.class, configuration);
         Configuration conf = resolveAndBind(
-                new ModuleFinderDelegate(parent.getConfiguration()),
+                new ModuleFinderDelegate(configuration),
                 List.of(parent.getConfiguration()),
                 ModuleFinder.of(),
                 List.of(current.getModuleName())
         );
-        final ClassLoader tmpLoader = loader;
-        ModuleLayer layer = defineModules(conf, List.of(parent.getLayer()), mn -> tmpLoader).layer();
-        updateField(new ConcurrentHashMap<String, ClassLoader>(), "remotePackageToLoader", Loader.class, loader);
-        ((Loader) loader).initRemotePackageMap(parent.getConfiguration(), List.of(parent.getLayer()));
+        ModuleLayer layer = current.getLayer();
+        updateFieldWithReflection(conf, "cf", ModuleLayer.class, layer);
+        updateFieldWithReflection(List.of(parent.getLayer()), "parents", ModuleLayer.class, layer);
+        updateFieldWithReflection(new ConcurrentHashMap<String, ClassLoader>(), "remotePackageToLoader", Loader.class, loader);
+        ((Loader) loader).initRemotePackageMap(conf, List.of(parent.getLayer()));
         return new LoadedModuleReference(
                 current.getModuleName(), current.getModule(), conf, layer, loader
         );
@@ -87,18 +95,31 @@ class ClasspathUpdater {
     private int findModule(LoadedModuleReference[] references, int referenceIndex, ModuleJarInfo module) {
         int tmpIndex = referenceIndex;
         while (tmpIndex >= 0) {
-            if (module.equals(references[tmpIndex--].getModule())) {
+            if (module.equals(references[tmpIndex].getModule())) {
                 break;
             }
+            tmpIndex--;
         }
         return tmpIndex;
     }
 
-    private void updateField(Object value, String name, Class<?> aClass, Object object) {
+    private void updateParentFieldWithUnsafe(Object value, Class<?> aClass, ClassLoader object) {
         Unsafe unsafe = Unsafe.getUnsafe();
-        long offset;
-        offset = unsafe.objectFieldOffset(aClass, name);
-        unsafe.compareAndSetReference(object, offset, null, value);
+        long offset = unsafe.objectFieldOffset(aClass, "parent");
+        unsafe.putReference(object, offset, value);
+    }
+
+    private void updateFieldWithReflection(Object value, String name, Class<?> aClass, Object object) {
+        Field field = null;
+        try {
+            field = aClass.getDeclaredField(name);
+            field.setAccessible(true);
+            field.set(object, value);
+        } catch (Exception e) {
+            LOGGER.log(SEVERE, e.getMessage(), e);
+        } finally {
+            if (field != null) field.setAccessible(false);
+        }
     }
 
     private static class LoadedModuleReferenceMock extends LoadedModuleReference {

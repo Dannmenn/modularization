@@ -19,7 +19,6 @@ import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.logging.Level.SEVERE;
 import static pl.mendroch.modularization.common.api.DependencyGraphUtils.createDependencyGraph;
 import static pl.mendroch.modularization.common.api.health.HealthRegister.HEALTH_REGISTER;
-import static pl.mendroch.modularization.common.api.utils.TODO.TODO;
 import static pl.mendroch.modularization.common.internal.concurrent.ExceptionAwareThreadFactory.threadFactory;
 import static pl.mendroch.modularization.core.runtime.ModuleFilesManager.MODULE_FILES_MANAGER;
 import static pl.mendroch.modularization.core.runtime.OverrideManager.OVERRIDE_MANAGER;
@@ -63,8 +62,8 @@ public enum RuntimeManager {
     private void updateRoot(Node<ModuleJarInfo> root) {
         List<ModuleJarInfo> flattened = new GraphFlattener<>(root).flatten();
         references = new ClasspathUpdater(flattened).updateClassLoaders(references);
-        TODO("invoke on before/after classpath update");
-        TODO("invoke change listeners");
+//        TODO("invoke on before/after classpath update");
+//        TODO("invoke change listeners");
     }
 
     private void buildModulesGraph(Node<ModuleJarInfo> root) {

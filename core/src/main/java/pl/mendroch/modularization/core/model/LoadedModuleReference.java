@@ -38,4 +38,9 @@ public class LoadedModuleReference {
     public ClassLoader getLoader() {
         return loader;
     }
+
+    @Override
+    public String toString() {
+        return module.toString();
+    }
 }

@@ -4,4 +4,5 @@ module pl.mendroch.modularization.example.main {
     requires pl.mendroch.modularization.example.service;
     requires commons.lang3;
     requires pl.mendroch.modularization.core;
+    requires pl.mendroch.modularization.common;
 }

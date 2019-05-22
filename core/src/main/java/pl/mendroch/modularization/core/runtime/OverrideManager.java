@@ -55,6 +55,7 @@ public enum OverrideManager {
     }
 
     private void saveOverridesToFile() {
+        if (System.getProperty("skip.override.save") != null) return;
         Properties properties = new Properties();
         for (Map.Entry<Dependency, Dependency> entry : overrides.entrySet()) {
             properties.put(entry.getKey().toString(), entry.getValue().toString());
