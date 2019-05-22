@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-ext.moduleName='pl.mendroch.modularization.application.console'
+ext.moduleName = 'pl.mendroch.modularization.application.console'
 
 group 'pl.mendroch.modularization'
 version '1.0-SNAPSHOT'
@@ -12,14 +12,4 @@ targetCompatibility = 12
 
 dependencies {
     implementation project(':application')
-}
-
-compileJava {
-    inputs.property("moduleName", moduleName)
-    doFirst {
-        options.compilerArgs = [
-                '--module-path', classpath.asPath,
-        ]
-        classpath = files()
-    }
 }

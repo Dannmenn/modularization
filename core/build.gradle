@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-ext.moduleName='pl.mendroch.modularization.core'
+ext.moduleName = 'pl.mendroch.modularization.core'
 group 'pl.mendroch.modularization'
 version '1.0-SNAPSHOT'
 
@@ -20,14 +20,10 @@ dependencies {
 }
 
 compileJava {
-    inputs.property("moduleName", moduleName)
-    doFirst {
-        options.compilerArgs = [
-                '--add-exports', 'java.base/jdk.internal.loader=pl.mendroch.modularization.core',
-                '--add-exports', 'java.base/jdk.internal.misc=pl.mendroch.modularization.core',
-                '--module-path', classpath.asPath,
+    moduleOptions {
+        addExports = [
+                'java.base/jdk.internal.loader': 'pl.mendroch.modularization.core',
+                'java.base/jdk.internal.misc'  : 'pl.mendroch.modularization.core'
         ]
-        classpath = files()
     }
 }
-

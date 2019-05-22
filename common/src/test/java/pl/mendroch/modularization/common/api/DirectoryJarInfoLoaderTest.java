@@ -24,7 +24,7 @@ public class DirectoryJarInfoLoaderTest {
                 "[org.apache.commons:commons-lang3@3.3.2, pl.mendroch.modularization.test:provider@1.0-SNAPSHOT]");
         validateModuleInfo(moduleJarInfos.get(1),
                 "pl.mendroch.modularization.example.provider",
-                "[org.apache.commons:commons-lang3@3.1, pl.mendroch.modularization.test:service@1.0-SNAPSHOT]");
+                "[org.apache.commons:commons-lang3@3.3.2, pl.mendroch.modularization.test:service@1.0-SNAPSHOT]");
         validateModuleInfo(moduleJarInfos.get(2),
                 "pl.mendroch.modularization.example.provider",
                 "[org.apache.commons:commons-lang3@3.3.2, pl.mendroch.modularization.test:service@1.0-SNAPSHOT]");
