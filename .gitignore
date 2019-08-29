@@ -2,6 +2,7 @@ build
 .idea
 .idea/libraries
 gradle
+.gradle
 
 # Log file
 *.log

@@ -44,6 +44,7 @@ public class GraphFlattener<T> {
                 }
                 assert candidate != null;
                 Node<T> node = candidate.node;
+                statistics.remove(node);
                 List<Node<T>> nextChildren = node.getChildren();
                 for (Node<T> child : tmp.getChildren()) {
                     if (child.equals(node)) continue;

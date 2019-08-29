@@ -56,6 +56,6 @@ public class Node<V> {
 
     @Override
     public String toString() {
-        return value.toString() + "\n" + children;
+        return value.toString() + " { " + children + " }";
     }
 }

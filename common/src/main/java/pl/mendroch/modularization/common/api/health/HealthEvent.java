@@ -1,8 +1,20 @@
 package pl.mendroch.modularization.common.api.health;
 
-import pl.mendroch.modularization.common.api.annotation.TODO;
+import java.util.logging.Level;
 
-@TODO("Add missing getters")
 public interface HealthEvent {
+
+    String getGroupName();
+
+    String getName();
+
+    long getId();
+
+    Level getLevel();
+
+    Throwable getException();
+
+    boolean isNew();
+
     long getTime();
 }
