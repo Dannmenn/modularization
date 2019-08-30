@@ -1,5 +1,6 @@
 package pl.mendroch.modularization.core;
 
+import lombok.Getter;
 import pl.mendroch.modularization.common.api.model.graph.Graph;
 import pl.mendroch.modularization.common.api.model.graph.Vertex;
 import pl.mendroch.modularization.common.api.model.modules.Dependency;
@@ -16,11 +17,16 @@ import java.util.Set;
 import static pl.mendroch.modularization.common.api.utils.GraphUtils.isCyclic;
 
 public class DependencyTreeBuilder {
+    @Getter
     private final Graph<ModuleJarInfo, Dependency> graph;
     private final Map<Dependency, ModuleJarInfo> mapper;
+    @Getter
     private final Set<Dependency> jars = new HashSet<>();
+    @Getter
     private final Set<JarInfo> unused = new HashSet<>();
+    @Getter
     private final Set<JarInfo> obsolete = new HashSet<>();
+    @Getter
     private Node<ModuleJarInfo> root;
     private Vertex<Dependency> entry;
 
@@ -96,25 +102,5 @@ public class DependencyTreeBuilder {
                 entry = vertex;
             }
         }
-    }
-
-    public Graph<ModuleJarInfo, Dependency> getGraph() {
-        return graph;
-    }
-
-    public Node<ModuleJarInfo> getRoot() {
-        return root;
-    }
-
-    public Set<Dependency> getJars() {
-        return jars;
-    }
-
-    public Set<JarInfo> getUnused() {
-        return unused;
-    }
-
-    public Set<JarInfo> getObsolete() {
-        return obsolete;
     }
 }

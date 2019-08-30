@@ -1,13 +1,16 @@
 package pl.mendroch.modularization.common.api.model.tree;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import static java.util.List.copyOf;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Node<V> {
+    @EqualsAndHashCode.Include
     private final V value;
     private final List<Node<V>> children = new ArrayList<>();
 
@@ -39,19 +42,6 @@ public class Node<V> {
 
     public List<Node<V>> getChildren() {
         return copyOf(children);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Node<?> node = (Node<?>) o;
-        return Objects.equals(value, node.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
     }
 
     @Override

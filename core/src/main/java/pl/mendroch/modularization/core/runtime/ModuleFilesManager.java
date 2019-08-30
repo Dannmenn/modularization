@@ -1,5 +1,6 @@
 package pl.mendroch.modularization.core.runtime;
 
+import lombok.extern.java.Log;
 import pl.mendroch.modularization.common.api.JarInfoLoader;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
 
@@ -9,16 +10,14 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 import static java.util.logging.Level.SEVERE;
 import static pl.mendroch.modularization.common.api.utils.TODO.TODO;
 
+@Log
 public enum ModuleFilesManager {
     MODULE_FILES_MANAGER;
-    private static final Logger LOGGER = Logger.getLogger(ModuleFilesManager.class.getName());
-
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final List<ModuleJarInfo> modules = new CopyOnWriteArrayList<>();
 
@@ -40,7 +39,7 @@ public enum ModuleFilesManager {
                     key = takeNext(watcher);
                 }
             } catch (IOException e) {
-                LOGGER.log(SEVERE, "Failed to register directory watcher", e);
+                log.log(SEVERE, "Failed to register directory watcher", e);
             }
         });
     }

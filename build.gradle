@@ -29,5 +29,6 @@ allprojects {
     configurations {
         dynamicImplementation
         implementation.extendsFrom dynamicImplementation
+        testImplementation.extendsFrom compileOnly
     }
 }

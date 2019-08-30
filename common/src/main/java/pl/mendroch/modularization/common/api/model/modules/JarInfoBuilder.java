@@ -1,7 +1,5 @@
 package pl.mendroch.modularization.common.api.model.modules;
 
-import pl.mendroch.modularization.common.api.annotation.InternalTesting;
-
 import java.nio.file.Path;
 
 public class JarInfoBuilder {

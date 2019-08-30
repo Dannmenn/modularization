@@ -1,5 +1,6 @@
 package pl.mendroch.modularization.core.runtime;
 
+import lombok.extern.java.Log;
 import pl.mendroch.modularization.common.api.model.graph.Graph;
 import pl.mendroch.modularization.common.api.model.modules.Dependency;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
@@ -13,7 +14,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.logging.Level.SEVERE;
@@ -23,10 +23,9 @@ import static pl.mendroch.modularization.common.internal.concurrent.ExceptionAwa
 import static pl.mendroch.modularization.core.runtime.ModuleFilesManager.MODULE_FILES_MANAGER;
 import static pl.mendroch.modularization.core.runtime.OverrideManager.OVERRIDE_MANAGER;
 
+@Log
 public enum RuntimeManager {
     RUNTIME_MANAGER;
-    private static final Logger LOGGER = Logger.getLogger(RuntimeManager.class.getName());
-
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final ExecutorService executor = newCachedThreadPool(threadFactory("runtime-manager"));
@@ -34,7 +33,7 @@ public enum RuntimeManager {
 
     public void initialize(Node<ModuleJarInfo> root) {
         if (initialized.getAndSet(true)) {
-            LOGGER.severe("Application already started. Update modules graph instead of reinitializing");
+            log.severe("Application already started. Update modules graph instead of reinitializing");
             throw new IllegalStateException("Application already started");
         } else {
             buildModulesGraph(root);
@@ -44,18 +43,18 @@ public enum RuntimeManager {
     public void update(Dependency existing, Dependency override) throws Exception {
         OVERRIDE_MANAGER.override(existing, override);
         Future<DependencyTreeBuilder> treeBuilderFuture = executor.submit(() -> {
-            LOGGER.info("Building updated dependency graph");
+            log.info("Building updated dependency graph");
             List<ModuleJarInfo> moduleJarInfos = MODULE_FILES_MANAGER.getModules();
 
             Graph<ModuleJarInfo, Dependency> dependencyGraph = createDependencyGraph(moduleJarInfos, OVERRIDE_MANAGER.getOverrides());
-            LOGGER.fine("Updated graph:" + System.lineSeparator() + dependencyGraph.toString());
+            log.fine("Updated graph:" + System.lineSeparator() + dependencyGraph.toString());
             return new DependencyTreeBuilder(dependencyGraph);
         });
         DependencyTreeBuilder dependencyTreeBuilder = treeBuilderFuture.get();
-        LOGGER.info("Building updated dependency tree finished");
+        log.info("Building updated dependency tree finished");
 
-        LOGGER.info("Unused dependencies:" + dependencyTreeBuilder.getUnused());
-        LOGGER.info("Obsolete dependencies:" + dependencyTreeBuilder.getObsolete());
+        log.info("Unused dependencies:" + dependencyTreeBuilder.getUnused());
+        log.info("Obsolete dependencies:" + dependencyTreeBuilder.getObsolete());
         updateRoot(dependencyTreeBuilder.getRoot());
     }
 
@@ -73,7 +72,7 @@ public enum RuntimeManager {
 
     public void run() {
         if (started.getAndSet(true)) {
-            LOGGER.severe("Application already started. Update modules graph instead of reinitializing");
+            log.severe("Application already started. Update modules graph instead of reinitializing");
             throw new IllegalStateException("Application already started");
         }
         final LoadedModuleReference entryPoint = references[0];
@@ -86,7 +85,7 @@ public enum RuntimeManager {
                 Method method = aClass.getMethod("main", String[].class);
                 method.invoke(null, new Object[]{new String[0]});
             } catch (Exception e) {
-                LOGGER.log(SEVERE, e.getMessage(), e);
+                log.log(SEVERE, e.getMessage(), e);
                 HEALTH_REGISTER.registerEvent(SEVERE, e);
             }
         });

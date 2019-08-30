@@ -1,5 +1,6 @@
 package pl.mendroch.modularization.core.runtime;
 
+import lombok.extern.java.Log;
 import pl.mendroch.modularization.common.api.DependencyGraphUtils;
 import pl.mendroch.modularization.common.api.annotation.PerformanceOptimizationHint;
 import pl.mendroch.modularization.common.api.model.modules.Dependency;
@@ -14,17 +15,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static java.util.logging.Level.SEVERE;
 import static pl.mendroch.modularization.common.api.health.HealthRegister.HEALTH_REGISTER;
 import static pl.mendroch.modularization.core.runtime.ModuleFilesManager.MODULE_FILES_MANAGER;
 
+@Log
 public enum OverrideManager {
     OVERRIDE_MANAGER;
-    private static final Logger LOGGER = Logger.getLogger(OverrideManager.class.getName());
-
     private final Map<Dependency, Dependency> overrides = new HashMap<>();
     private final Path propertiesFile = Paths.get("module-overrides.properties");
     @PerformanceOptimizationHint
@@ -63,7 +62,7 @@ public enum OverrideManager {
         try (OutputStream outputStream = Files.newOutputStream(propertiesFile)) {
             properties.store(outputStream, "Modules override values");
         } catch (IOException e) {
-            LOGGER.log(SEVERE, e.getMessage(), e);
+            log.log(SEVERE, e.getMessage(), e);
             HEALTH_REGISTER.registerEvent(SEVERE, e);
         }
     }

@@ -32,10 +32,10 @@ public class DependencyGraphUtilsTest {
 
         assertNotNull(graph);
         assertEquals(
-                PROVIDER_1_0 + "->[" + COMMONS_LANG_3_3 + ", " + SERVICE_1_0 + "]\n" +
-                        SERVICE_1_0 + "->[]\n" +
+                PROVIDER_1_1 + "->[" + COMMONS_LANG_3_3 + ", " + SERVICE_1_0 + "]\n" +
                         EXAMPLE_1_0 + "->[" + COMMONS_LANG_3_3 + ", " + PROVIDER_1_0 + "]\n" +
-                        PROVIDER_1_1 + "->[" + COMMONS_LANG_3_3 + ", " + SERVICE_1_0 + "]\n",
+                        SERVICE_1_0 + "->[]\n" +
+                        PROVIDER_1_0 + "->[" + COMMONS_LANG_3_3 + ", " + SERVICE_1_0 + "]\n",
                 graph.toString());
     }
 }

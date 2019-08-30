@@ -1,44 +1,20 @@
 package pl.mendroch.modularization.common.api.model.modules;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
 import java.lang.module.ModuleDescriptor;
-import java.util.Objects;
 import java.util.Set;
 
+@Getter
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ModuleJarInfo {
+    @EqualsAndHashCode.Include
     private final JarInfo jarInfo;
     private final Set<Dependency> dependencies;
     private final ModuleDescriptor descriptor;
-
-    ModuleJarInfo(JarInfo jarInfo, Set<Dependency> dependencies, ModuleDescriptor descriptor) {
-        this.jarInfo = jarInfo;
-        this.dependencies = dependencies;
-        this.descriptor = descriptor;
-    }
-
-    public JarInfo getJarInfo() {
-        return jarInfo;
-    }
-
-    public Set<Dependency> getDependencies() {
-        return dependencies;
-    }
-
-    public ModuleDescriptor getDescriptor() {
-        return descriptor;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ModuleJarInfo that = (ModuleJarInfo) o;
-        return jarInfo.equals(that.jarInfo);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(jarInfo);
-    }
 
     @Override
     public String toString() {

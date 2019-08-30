@@ -1,5 +1,6 @@
 package pl.mendroch.modularization.application.console.api;
 
+import lombok.extern.java.Log;
 import pl.mendroch.modularization.application.api.ApplicationLoader;
 import pl.mendroch.modularization.application.internal.ApplicationArgumentName;
 
@@ -7,31 +8,29 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
 
 import static pl.mendroch.modularization.application.api.ApplicationConstants.APPLICATION_LOADER_CLASS;
 import static pl.mendroch.modularization.application.internal.ApplicationArgumentName.LOADER;
 import static pl.mendroch.modularization.application.internal.ApplicationArgumentName.PATH;
 
+@Log
 public class ConsoleApplication {
-    private static final Logger LOGGER = Logger.getLogger(ConsoleApplication.class.getName());
-
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        LOGGER.info("Console Application: main(" + Arrays.toString(args) + ")");
+        log.info("Console Application: main(" + Arrays.toString(args) + ")");
         Map<ApplicationArgumentName, String> parameters = prepareParameters(args);
 
-        LOGGER.info("Application parameters: " + parameters.toString());
+        log.info("Application parameters: " + parameters.toString());
         ApplicationLoader application = new ApplicationLoader(parameters);
 
-        LOGGER.info("Loading custom configuration");
+        log.info("Loading custom configuration");
         application.loadCustomConfiguration();
 
-        LOGGER.info("Loading application");
+        log.info("Loading application");
         application.load();
 
-        LOGGER.info("Starting application");
+        log.info("Starting application");
         application.run();
-        LOGGER.info("Exiting application");
+        log.info("Exiting application");
     }
 
     private static Map<ApplicationArgumentName, String> prepareParameters(String[] args) {

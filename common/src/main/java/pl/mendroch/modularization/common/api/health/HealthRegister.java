@@ -46,7 +46,7 @@ public enum HealthRegister {
                 HealthEventImpl healthEvent = (HealthEventImpl) value;
                 if (healthEvent.isNew()) {
                     newEvents.add(value);
-                    healthEvent.setIsNew(false);
+                    healthEvent.setNew(false);
                 }
             }
         }

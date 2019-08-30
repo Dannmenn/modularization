@@ -1,5 +1,6 @@
 package pl.mendroch.modularization.application.api;
 
+import lombok.extern.java.Log;
 import pl.mendroch.modularization.application.api.loaders.ApplicationConfigurator;
 import pl.mendroch.modularization.application.api.loaders.ApplicationModuleLoader;
 import pl.mendroch.modularization.application.api.loaders.CustomApplicationLoader;
@@ -23,7 +24,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,9 +36,8 @@ import static pl.mendroch.modularization.core.runtime.ModuleFilesManager.MODULE_
 import static pl.mendroch.modularization.core.runtime.OverrideManager.OVERRIDE_MANAGER;
 import static pl.mendroch.modularization.core.runtime.RuntimeManager.RUNTIME_MANAGER;
 
+@Log
 public class ApplicationLoader {
-    private static final Logger LOGGER = Logger.getLogger(ApplicationLoader.class.getName());
-
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private final Map<ApplicationArgumentName, String> parameters;
     private final CustomApplicationLoader loader;
@@ -63,25 +62,25 @@ public class ApplicationLoader {
         if (loader != null) loader.beforeLoad();
         Future<DependencyTreeBuilder> treeBuilderFuture = executor.submit(() -> {
             try {
-                LOGGER.info("Building dependency graph");
+                log.info("Building dependency graph");
                 Path directory = Paths.get(parameters.get(PATH));
                 MODULE_FILES_MANAGER.initialize(directory);
                 List<ModuleJarInfo> moduleJarInfos = MODULE_FILES_MANAGER.getModules();
 
                 Graph<ModuleJarInfo, Dependency> dependencyGraph = createDependencyGraph(moduleJarInfos, OVERRIDE_MANAGER.getOverrides());
-                LOGGER.fine("Graph:" + System.lineSeparator() + dependencyGraph.toString());
+                log.fine("Graph:" + System.lineSeparator() + dependencyGraph.toString());
                 return new DependencyTreeBuilder(dependencyGraph);
             } catch (IOException e) {
-                LOGGER.log(SEVERE, "Failed to build dependency graph", e);
+                log.log(SEVERE, "Failed to build dependency graph", e);
                 throw new IllegalStateException(e);
             }
         });
         DependencyTreeBuilder dependencyTreeBuilder = treeBuilderFuture.get();
-        LOGGER.info("Building dependency tree finished");
+        log.info("Building dependency tree finished");
 
-        LOGGER.info("Unused dependencies:" + dependencyTreeBuilder.getUnused());
-        LOGGER.info("Obsolete dependencies:" + dependencyTreeBuilder.getObsolete());
-        LOGGER.info("Building module graph");
+        log.info("Unused dependencies:" + dependencyTreeBuilder.getUnused());
+        log.info("Obsolete dependencies:" + dependencyTreeBuilder.getObsolete());
+        log.info("Building module graph");
         Node<ModuleJarInfo> root = dependencyTreeBuilder.getRoot();
         RUNTIME_MANAGER.initialize(root);
         if (loader != null) loader.afterLoad();

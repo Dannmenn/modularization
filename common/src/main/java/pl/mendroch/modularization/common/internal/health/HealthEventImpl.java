@@ -1,9 +1,14 @@
 package pl.mendroch.modularization.common.internal.health;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import pl.mendroch.modularization.common.api.health.HealthEvent;
 
 import java.util.logging.Level;
 
+@Getter
+@ToString
 public class HealthEventImpl implements HealthEvent {
     private final long time = System.currentTimeMillis();
 
@@ -13,6 +18,7 @@ public class HealthEventImpl implements HealthEvent {
     private final Level level;
     private final Throwable exception;
 
+    @Setter
     private boolean isNew;
 
     public HealthEventImpl(Thread thread, Level level, Throwable exception) {
@@ -21,37 +27,5 @@ public class HealthEventImpl implements HealthEvent {
         id = thread.getId();
         this.level = level;
         this.exception = exception;
-    }
-
-    public String getGroupName() {
-        return groupName;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public Level getLevel() {
-        return level;
-    }
-
-    public Throwable getException() {
-        return exception;
-    }
-
-    public long getTime() {
-        return time;
-    }
-
-    public boolean isNew() {
-        return isNew;
-    }
-
-    public void setIsNew(boolean isNew) {
-        this.isNew = isNew;
     }
 }
