@@ -13,20 +13,17 @@ import java.util.concurrent.Executors;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 import static java.util.logging.Level.SEVERE;
-import static pl.mendroch.modularization.common.api.utils.TODO.TODO;
 
 @Log
 public enum ModuleFilesManager {
     MODULE_FILES_MANAGER;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final List<ModuleJarInfo> modules = new CopyOnWriteArrayList<>();
+    private Path path;
 
     public void initialize(Path path) throws IOException {
-        modules.clear();
-        Files.walk(path, 1)
-                .filter(Files::isRegularFile)
-                .map(JarInfoLoader::loadModuleInformation)
-                .forEach(modules::add);
+        this.path = path;
+        loadModulesInDirectory(path);
         executor.submit(() -> {
             try {
                 WatchService watcher = FileSystems.getDefault().newWatchService();
@@ -49,18 +46,68 @@ public enum ModuleFilesManager {
     }
 
     private void handleWatchEvent(WatchEvent<?> event) {
-        System.out.println("Event kind:" + event.kind() + ". File affected: " + event.context());
+        log.info("Event kind:" + event.kind() + ". File affected: " + event.context());
         if (ENTRY_CREATE.equals(event.kind())) {
-            TODO("Add entry");
+            onFileCreate(event);
             return;
         }
         if (ENTRY_DELETE.equals(event.kind())) {
-            TODO("Remove entry");
+            onFileDelete(event);
             return;
         }
         if (OVERFLOW.equals(event.kind())) {
-            TODO("Invalidate whole directory");
+            onOverflow();
         }
+    }
+
+    private void onOverflow() {
+        try {
+            modules.clear();
+            loadModulesInDirectory(path);
+        } catch (Exception e) {
+            log.log(SEVERE, e.getMessage(), e);
+        }
+    }
+
+    private void onFileDelete(WatchEvent<?> event) {
+        Path context = (Path) event.context();
+        Path fileName = context.getFileName();
+        for (ModuleJarInfo module : modules) {
+            if (module.getJarInfo().getFileName().equals(fileName.toString())) {
+                modules.remove(module);
+            }
+        }
+    }
+
+    private void onFileCreate(WatchEvent<?> event) {
+        Path context = (Path) event.context();
+        Path file = Paths.get(path.toString(), context.getFileName().toString());
+        if (Files.isRegularFile(file)) {
+            ModuleJarInfo loadedJarInfo = JarInfoLoader.loadModuleInformation(file);
+            if (isDuplicated(loadedJarInfo.toString())) {
+                modules.add(loadedJarInfo);
+            } else {
+                log.severe("Found duplicate for " + loadedJarInfo.toString());
+            }
+        } else {
+            log.warning("Added file is not a regular file");
+        }
+    }
+
+    private void loadModulesInDirectory(Path path) throws IOException {
+        Files.walk(path, 1)
+                .filter(Files::isRegularFile)
+                .map(JarInfoLoader::loadModuleInformation)
+                .forEach(modules::add);
+    }
+
+    private boolean isDuplicated(String moduleInfo) {
+        for (ModuleJarInfo module : modules) {
+            if (moduleInfo.equals(module.toString())) {
+                return false;
+            }
+        }
+        return false;
     }
 
     private WatchKey takeNext(WatchService watcher) {
