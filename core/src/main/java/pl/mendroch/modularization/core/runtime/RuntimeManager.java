@@ -11,6 +11,7 @@ import pl.mendroch.modularization.core.model.LoadedModuleReference;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -31,17 +32,21 @@ public enum RuntimeManager {
     private final ExecutorService executor = newCachedThreadPool(threadFactory("runtime-manager"));
     private LoadedModuleReference[] references;
 
-    public void initialize(Node<ModuleJarInfo> root) {
+    public void initialize(Node<ModuleJarInfo> root, Set<ModuleJarInfo> thirdPartyJars) {
         if (initialized.getAndSet(true)) {
             log.severe("Application already started. Update modules graph instead of reinitializing");
             throw new IllegalStateException("Application already started");
         } else {
-            buildModulesGraph(root);
+            buildModulesGraph(root, thirdPartyJars);
         }
     }
 
     public void update(Dependency existing, Dependency override) throws Exception {
         OVERRIDE_MANAGER.override(existing, override);
+        update();
+    }
+
+    public void update() throws Exception {
         Future<DependencyTreeBuilder> treeBuilderFuture = executor.submit(() -> {
             log.info("Building updated dependency graph");
             List<ModuleJarInfo> moduleJarInfos = MODULE_FILES_MANAGER.getModules();
@@ -53,7 +58,7 @@ public enum RuntimeManager {
         DependencyTreeBuilder dependencyTreeBuilder = treeBuilderFuture.get();
         log.info("Building updated dependency tree finished");
 
-        log.info("Unused dependencies:" + dependencyTreeBuilder.getUnused());
+        log.info("Third party dependencies which won't be updated:" + dependencyTreeBuilder.getThirdPartyJars());
         log.info("Obsolete dependencies:" + dependencyTreeBuilder.getObsolete());
         updateRoot(dependencyTreeBuilder.getRoot());
     }
@@ -65,9 +70,9 @@ public enum RuntimeManager {
 //        TODO("invoke change listeners");
     }
 
-    private void buildModulesGraph(Node<ModuleJarInfo> root) {
+    private void buildModulesGraph(Node<ModuleJarInfo> root, Set<ModuleJarInfo> thirdPartyJars) {
         List<ModuleJarInfo> flattened = new GraphFlattener<>(root).flatten();
-        references = new ClasspathBuilder(flattened).buildClassLoaders();
+        references = new ClasspathBuilder(flattened).buildClassLoaders(thirdPartyJars);
     }
 
     public void run() {

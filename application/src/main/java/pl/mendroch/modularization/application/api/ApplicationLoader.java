@@ -78,16 +78,16 @@ public class ApplicationLoader {
         DependencyTreeBuilder dependencyTreeBuilder = treeBuilderFuture.get();
         log.info("Building dependency tree finished");
 
-        log.info("Unused dependencies:" + dependencyTreeBuilder.getUnused());
+        log.info("Third party dependencies:" + dependencyTreeBuilder.getThirdPartyJars());
         log.info("Obsolete dependencies:" + dependencyTreeBuilder.getObsolete());
         log.info("Building module graph");
         Node<ModuleJarInfo> root = dependencyTreeBuilder.getRoot();
-        RUNTIME_MANAGER.initialize(root);
+        RUNTIME_MANAGER.initialize(root, dependencyTreeBuilder.getThirdPartyJars());
         if (loader != null) loader.afterLoad();
     }
 
     public void run() {
-        assert !RUNTIME_MANAGER.isInitialized() : "Application already started";
+        assert !RUNTIME_MANAGER.isInitialized() : "Application is not initialized yet";
         RUNTIME_MANAGER.run();
     }
 

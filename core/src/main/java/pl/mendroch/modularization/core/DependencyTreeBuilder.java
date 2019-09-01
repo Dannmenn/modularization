@@ -23,7 +23,7 @@ public class DependencyTreeBuilder {
     @Getter
     private final Set<Dependency> jars = new HashSet<>();
     @Getter
-    private final Set<JarInfo> unused = new HashSet<>();
+    private final Set<ModuleJarInfo> thirdPartyJars = new HashSet<>();
     @Getter
     private final Set<JarInfo> obsolete = new HashSet<>();
     @Getter
@@ -48,6 +48,7 @@ public class DependencyTreeBuilder {
     private void buildGraph() {
         Map<ModuleJarInfo, Node<ModuleJarInfo>> nodes = new HashMap<>();
         root = new Node<>(mapper.get(entry.getValue()));
+        jars.add(entry.getValue());
         buildGraphNodes(nodes, root, entry);
     }
 
@@ -71,7 +72,7 @@ public class DependencyTreeBuilder {
             Dependency dependency = vertex.getValue();
             JarInfo jarInfo = mapper.get(dependency).getJarInfo();
             if (!jars.contains(dependency)) {
-                unused.add(jarInfo);
+                thirdPartyJars.add(mapper.get(dependency));
             }
             Version jarVersion = Version.parse(jarInfo.getSpecificationVersion());
             Version latest = latestVersions.computeIfAbsent(jarInfo.getName(), s -> jarVersion);

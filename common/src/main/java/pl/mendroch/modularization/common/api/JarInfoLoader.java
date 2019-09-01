@@ -8,6 +8,7 @@ import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfoBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.module.ModuleDescriptor;
 import java.lang.module.ModuleFinder;
 import java.lang.module.ModuleReference;
 import java.nio.file.Files;
@@ -30,11 +31,11 @@ public final class JarInfoLoader {
         //Hide implicit constructor
     }
 
-    public static JarInfo loadJarInformation(Path path) {
-        return readJarFile(path, null);
+    public static JarInfo loadJarInformation(Path path, ModuleDescriptor descriptor) {
+        return readJarFile(path, descriptor, null);
     }
 
-    private static JarInfo readJarFile(Path path, Consumer<JarFile> jarFileConsumer) {
+    private static JarInfo readJarFile(Path path, ModuleDescriptor descriptor, Consumer<JarFile> jarFileConsumer) {
         try (JarFile jarFile = new JarFile(path.toFile())) {
             if (jarFileConsumer != null) {
                 jarFileConsumer.accept(jarFile);
@@ -49,6 +50,7 @@ public final class JarInfoLoader {
                     .setSpecificationTitle(mainAttributes.getValue(SPECIFICATION_TITLE))
                     .setSpecificationVersion(mainAttributes.getValue(SPECIFICATION_VERSION))
                     .setImplementationVersion(mainAttributes.getValue(IMPLEMENTATION_VERSION))
+                    .setMissing(descriptor)
                     .createJarInfo();
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -71,7 +73,7 @@ public final class JarInfoLoader {
             builder.setDescriptor(reference.descriptor());
         }
         builder.setJarInfo(
-                readJarFile(path, jarFile -> {
+                readJarFile(path, builder.getDescriptor(), jarFile -> {
                     try {
                         ZipEntry entry = getDependenciesEntry(jarFile);
                         if (entry != null) {

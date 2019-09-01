@@ -17,8 +17,9 @@ import static java.util.logging.Level.SEVERE;
 @Log
 public enum ModuleFilesManager {
     MODULE_FILES_MANAGER;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newCachedThreadPool();
     private final List<ModuleJarInfo> modules = new CopyOnWriteArrayList<>();
+    private final List<ModuleChangeListener> listeners = new CopyOnWriteArrayList<>();
     private Path path;
 
     public void initialize(Path path) throws IOException {
@@ -64,6 +65,7 @@ public enum ModuleFilesManager {
         try {
             modules.clear();
             loadModulesInDirectory(path);
+            notify("modules were reloaded");
         } catch (Exception e) {
             log.log(SEVERE, e.getMessage(), e);
         }
@@ -75,6 +77,7 @@ public enum ModuleFilesManager {
         for (ModuleJarInfo module : modules) {
             if (module.getJarInfo().getFileName().equals(fileName.toString())) {
                 modules.remove(module);
+                notify("module " + module.toString() + " was deleted");
             }
         }
     }
@@ -85,9 +88,10 @@ public enum ModuleFilesManager {
         if (Files.isRegularFile(file)) {
             ModuleJarInfo loadedJarInfo = JarInfoLoader.loadModuleInformation(file);
             if (isDuplicated(loadedJarInfo.toString())) {
-                modules.add(loadedJarInfo);
-            } else {
                 log.severe("Found duplicate for " + loadedJarInfo.toString());
+            } else {
+                modules.add(loadedJarInfo);
+                notify("New module added: " + loadedJarInfo.toString());
             }
         } else {
             log.warning("Added file is not a regular file");
@@ -104,7 +108,7 @@ public enum ModuleFilesManager {
     private boolean isDuplicated(String moduleInfo) {
         for (ModuleJarInfo module : modules) {
             if (moduleInfo.equals(module.toString())) {
-                return false;
+                return true;
             }
         }
         return false;
@@ -121,5 +125,17 @@ public enum ModuleFilesManager {
             }
             return takeNext(watcher);
         }
+    }
+
+    public void addListener(ModuleChangeListener listener) {
+        listeners.add(listener);
+    }
+
+    private void notify(String message) {
+        executor.submit(() -> {
+            for (ModuleChangeListener listener : listeners) {
+                listener.onChange(message);
+            }
+        });
     }
 }

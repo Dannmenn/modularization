@@ -17,6 +17,7 @@ import static java.util.jar.JarFile.MANIFEST_NAME;
 import static org.junit.Assert.*;
 
 public class SingleJarInfoLoaderTest {
+    private static final ModuleDescriptor EMPTY_MODULE = ModuleDescriptor.newModule("some").build();
     private Path jarWithoutDependencies;
     private Path jarWithDependencies;
 
@@ -36,7 +37,7 @@ public class SingleJarInfoLoaderTest {
 
     @Test
     public void loadJarInformation() {
-        JarInfo jarInfo = JarInfoLoader.loadJarInformation(jarWithoutDependencies);
+        JarInfo jarInfo = JarInfoLoader.loadJarInformation(jarWithoutDependencies, EMPTY_MODULE);
 
         assertNotNull(jarInfo);
         assertEquals("1.0.2", jarInfo.getSpecificationVersion());
@@ -60,7 +61,7 @@ public class SingleJarInfoLoaderTest {
 
     @Test
     public void loadJarWithDependenciesInformation() {
-        JarInfo jarInfo = JarInfoLoader.loadJarInformation(jarWithDependencies);
+        JarInfo jarInfo = JarInfoLoader.loadJarInformation(jarWithDependencies, EMPTY_MODULE);
 
         assertNotNull(jarInfo);
         assertEquals("1.0.2", jarInfo.getSpecificationVersion());

@@ -1,5 +1,7 @@
 package pl.mendroch.modularization.common.api.model.modules;
 
+import lombok.Getter;
+
 import java.lang.module.ModuleDescriptor;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,6 +10,7 @@ import java.util.Set;
 public class ModuleJarInfoBuilder {
     private JarInfo jarInfo;
     private Set<Dependency> dependencies = new HashSet<>();
+    @Getter
     private ModuleDescriptor descriptor;
 
     public ModuleJarInfoBuilder setJarInfo(JarInfo jarInfo) {
