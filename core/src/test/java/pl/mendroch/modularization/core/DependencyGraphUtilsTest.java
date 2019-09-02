@@ -1,4 +1,4 @@
-package pl.mendroch.modularization.common.api;
+package pl.mendroch.modularization.core;
 
 import org.junit.Test;
 import pl.mendroch.modularization.common.api.model.graph.Graph;
@@ -13,8 +13,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static pl.mendroch.modularization.common.api.DependencyGraphUtils.createDependencyGraph;
-import static pl.mendroch.modularization.common.api.JarInfoLoader.loadModulesInformation;
+import static pl.mendroch.modularization.core.DependencyGraphUtils.createDependencyGraph;
+import static pl.mendroch.modularization.core.JarInfoLoader.loadModulesInformation;
 
 public class DependencyGraphUtilsTest {
     private static final String PROVIDER_1_0 = "pl.mendroch.modularization.test:provider@1.0-SNAPSHOT";

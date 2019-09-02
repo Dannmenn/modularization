@@ -1,4 +1,4 @@
-package pl.mendroch.modularization.common.utils;
+package pl.mendroch.modularization.core.utils;
 
 import java.io.IOException;
 import java.io.InputStream;

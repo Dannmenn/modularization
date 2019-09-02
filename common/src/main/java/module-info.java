@@ -1,12 +1,10 @@
 import pl.mendroch.modularization.common.api.health.HealthEventListener;
 
-//TODO CONFIGURATION - export internal to project modules
 module pl.mendroch.modularization.common {
     uses HealthEventListener;
     requires static lombok;
     requires static org.mapstruct.processor;
     requires java.logging;
-    exports pl.mendroch.modularization.common.api;
     exports pl.mendroch.modularization.common.api.model.graph;
     exports pl.mendroch.modularization.common.api.model.modules;
     exports pl.mendroch.modularization.common.api.utils;

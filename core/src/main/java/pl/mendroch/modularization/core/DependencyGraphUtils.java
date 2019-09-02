@@ -1,6 +1,5 @@
-package pl.mendroch.modularization.common.api;
+package pl.mendroch.modularization.core;
 
-import pl.mendroch.modularization.common.api.annotation.TODO;
 import pl.mendroch.modularization.common.api.model.graph.Graph;
 import pl.mendroch.modularization.common.api.model.graph.Graph.Builder;
 import pl.mendroch.modularization.common.api.model.graph.Vertex;
@@ -16,7 +15,6 @@ import java.util.Map.Entry;
 import static java.util.stream.Collectors.toMap;
 import static pl.mendroch.modularization.common.api.model.graph.Vertex.vertexOf;
 
-@TODO("Move to core")
 public final class DependencyGraphUtils {
     private DependencyGraphUtils() {
         //Hide implicit constructor

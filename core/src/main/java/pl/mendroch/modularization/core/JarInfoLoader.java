@@ -1,6 +1,5 @@
-package pl.mendroch.modularization.common.api;
+package pl.mendroch.modularization.core;
 
-import pl.mendroch.modularization.common.api.annotation.TODO;
 import pl.mendroch.modularization.common.api.model.modules.Dependency;
 import pl.mendroch.modularization.common.api.model.modules.JarInfo;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
@@ -25,7 +24,6 @@ import java.util.zip.ZipEntry;
 import static java.util.jar.Attributes.Name.*;
 import static pl.mendroch.modularization.common.api.model.modules.JarInfoBuilder.jarInfoBuilder;
 
-@TODO("Move to core")
 public final class JarInfoLoader {
     private JarInfoLoader() {
         //Hide implicit constructor

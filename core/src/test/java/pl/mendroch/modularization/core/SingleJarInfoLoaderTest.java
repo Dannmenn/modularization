@@ -1,11 +1,11 @@
-package pl.mendroch.modularization.common.api;
+package pl.mendroch.modularization.core;
 
 import org.junit.Before;
 import org.junit.Test;
 import pl.mendroch.modularization.common.api.model.modules.Dependency;
 import pl.mendroch.modularization.common.api.model.modules.JarInfo;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
-import pl.mendroch.modularization.common.utils.JarUtils;
+import pl.mendroch.modularization.core.utils.JarUtils;
 
 import java.io.File;
 import java.lang.module.ModuleDescriptor;

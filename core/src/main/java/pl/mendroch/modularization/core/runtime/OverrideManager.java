@@ -1,9 +1,9 @@
 package pl.mendroch.modularization.core.runtime;
 
 import lombok.extern.java.Log;
-import pl.mendroch.modularization.common.api.DependencyGraphUtils;
 import pl.mendroch.modularization.common.api.annotation.PerformanceOptimizationHint;
 import pl.mendroch.modularization.common.api.model.modules.Dependency;
+import pl.mendroch.modularization.core.DependencyGraphUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

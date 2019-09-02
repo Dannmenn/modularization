@@ -1,4 +1,4 @@
-package pl.mendroch.modularization.common.api;
+package pl.mendroch.modularization.core;
 
 import org.junit.Test;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
@@ -10,7 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static pl.mendroch.modularization.common.api.JarInfoLoader.loadModulesInformation;
+import static pl.mendroch.modularization.core.JarInfoLoader.loadModulesInformation;
 
 public class DirectoryJarInfoLoaderTest {
     @Test
