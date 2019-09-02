@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+}
+ext.moduleName = 'pl.mendroch.modularization.application.javafx.starter'
+
+group 'pl.mendroch.modularization'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(":common")
+    implementation project(":application:console-application")
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+compileJava {
+    moduleOptions {
+        addExports = [
+                'java.base/jdk.internal.module': 'pl.mendroch.modularization.application.javafx.starter'
+        ]
+    }
+}

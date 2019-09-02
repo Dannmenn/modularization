@@ -1,6 +1,6 @@
 package pl.mendroch.modularization.core.runtime;
 
-import jdk.internal.module.Modules;
+import pl.mendroch.modularization.common.api.loader.ThirdPartyModuleConfigurator;
 import pl.mendroch.modularization.common.api.model.modules.JarInfo;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
 import pl.mendroch.modularization.core.model.LoadedModuleReference;
@@ -9,6 +9,7 @@ import java.lang.module.Configuration;
 import java.lang.module.ModuleFinder;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,7 @@ class ClasspathBuilder {
                     moduleNames
             );
             layer = layer.defineModulesWithOneLoader(conf, loader);
+            configureThirdPartyModules(layer);
             loader = layer.findLoader(moduleNames.get(0));
         }
         for (int i = modules.size() - 1; i >= 0; i--) {
@@ -56,5 +58,12 @@ class ClasspathBuilder {
             result[i] = new LoadedModuleReference(moduleName, module, conf, layer, loader);
         }
         return result;
+    }
+
+    private void configureThirdPartyModules(ModuleLayer layer) {
+        ServiceLoader<ThirdPartyModuleConfigurator> configurators = ServiceLoader.load(ThirdPartyModuleConfigurator.class);
+        for (ThirdPartyModuleConfigurator configurator : configurators) {
+            configurator.configure(layer);
+        }
     }
 }

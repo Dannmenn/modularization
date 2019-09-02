@@ -14,4 +14,5 @@ module pl.mendroch.modularization.common {
     exports pl.mendroch.modularization.common.api.annotation;
     exports pl.mendroch.modularization.common.internal.concurrent;
     exports pl.mendroch.modularization.common.api.health;
+    exports pl.mendroch.modularization.common.api.loader;
 }
