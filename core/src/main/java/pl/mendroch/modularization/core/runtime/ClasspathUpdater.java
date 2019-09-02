@@ -30,9 +30,9 @@ class ClasspathUpdater {
         this.modules = modules;
     }
 
-    LoadedModuleReference[] updateClassLoaders(LoadedModuleReference[] references) {
+    LoadedModuleReference[] updateClassLoaders(LoadedModuleReference[] references, LoadedModuleReference parentReference) {
         LoadedModuleReference[] result = new LoadedModuleReference[modules.size()];
-        LoadedModuleReference parent = new LoadedModuleReferenceMock(ModuleLayer.boot(), getClass().getClassLoader());
+        LoadedModuleReference parent = parentReference;
         for (int i = modules.size() - 1, referenceIndex = references.length - 1; i >= 0; i--) {
             ModuleJarInfo module = modules.get(i);
             int tmpIndex = findModule(references, referenceIndex, module);

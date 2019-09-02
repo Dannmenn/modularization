@@ -8,6 +8,7 @@ module pl.mendroch.modularization.example.javafx {
     requires pl.mendroch.modularization.example.javafx.api;
     requires pl.mendroch.modularization.core;
     requires java.logging;
+    requires pl.mendroch.modularization.common;
 
     exports pl.mendroch.modularization.example.javafx;
 

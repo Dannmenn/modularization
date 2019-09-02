@@ -6,6 +6,7 @@ import pl.mendroch.modularization.common.api.model.graph.Vertex;
 import pl.mendroch.modularization.common.api.model.modules.Dependency;
 import pl.mendroch.modularization.common.api.model.modules.JarInfo;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
+import pl.mendroch.modularization.common.api.model.modules.OptionalDependency;
 import pl.mendroch.modularization.common.api.model.tree.Node;
 
 import java.lang.module.ModuleDescriptor.Version;
@@ -56,6 +57,9 @@ public class DependencyTreeBuilder {
         for (Vertex<Dependency> edge : graph.getEdges(vertex)) {
             Dependency dependency = edge.getValue();
             ModuleJarInfo jarInfo = mapper.get(dependency);
+            if (jarInfo == null && dependency instanceof OptionalDependency) {
+                continue;
+            }
             boolean visited = nodes.containsKey(jarInfo);
             jars.add(dependency);
             Node<ModuleJarInfo> node = nodes.computeIfAbsent(jarInfo, Node::new);
@@ -67,13 +71,12 @@ public class DependencyTreeBuilder {
     }
 
     private void analyzeGraph() {
+        String skipThirdPartyGroups = System.getProperty("skip.third.party.group");
+        if (skipThirdPartyGroups == null) skipThirdPartyGroups = "";
         Map<String, Version> latestVersions = new HashMap<>();
         for (Vertex<Dependency> vertex : graph.getVertices()) {
             Dependency dependency = vertex.getValue();
             JarInfo jarInfo = mapper.get(dependency).getJarInfo();
-            if (!jars.contains(dependency)) {
-                thirdPartyJars.add(mapper.get(dependency));
-            }
             Version jarVersion = Version.parse(jarInfo.getSpecificationVersion());
             Version latest = latestVersions.computeIfAbsent(jarInfo.getName(), s -> jarVersion);
             if (!jarIsObsolete(latest, jarVersion)) {
@@ -87,6 +90,8 @@ public class DependencyTreeBuilder {
             Version latest = latestVersions.get(jarInfo.getName());
             if (jarIsObsolete(latest, jarVersion)) {
                 obsolete.add(jarInfo);
+            } else if (!jars.contains(dependency) && !skipThirdPartyGroups.contains(dependency.getGroup())) {
+                thirdPartyJars.add(mapper.get(dependency));
             }
         }
     }

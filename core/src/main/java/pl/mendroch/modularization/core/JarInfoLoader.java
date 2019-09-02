@@ -1,9 +1,6 @@
 package pl.mendroch.modularization.core;
 
-import pl.mendroch.modularization.common.api.model.modules.Dependency;
-import pl.mendroch.modularization.common.api.model.modules.JarInfo;
-import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
-import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfoBuilder;
+import pl.mendroch.modularization.common.api.model.modules.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -93,8 +90,12 @@ public final class JarInfoLoader {
         for (Entry<Object, Object> entry : properties.entrySet()) {
             String key = (String) entry.getKey();
             String[] parts = key.split(":");
-            assert parts.length == 2 : "Invalid jar name format: " + key;
-            dependencies.add(new Dependency(parts[0], parts[1], (String) entry.getValue()));
+            assert parts.length >= 2 : "Invalid jar name format: " + key;
+            if (parts.length > 2) {
+                dependencies.add(new OptionalDependency(parts[1], parts[2], (String) entry.getValue()));
+            } else {
+                dependencies.add(new Dependency(parts[0], parts[1], (String) entry.getValue()));
+            }
         }
         return dependencies;
     }

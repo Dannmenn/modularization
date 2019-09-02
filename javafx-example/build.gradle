@@ -17,8 +17,10 @@ repositories {
 }
 
 dependencies {
+    compileOnly project(":common")
     compileOnly project(":core")
     dynamicImplementation project("javafx-example-api")
+    uses project("javafx-sample-view")
     implementation group: 'org.controlsfx', name: 'controlsfx', version: '11.0.0'
     compileOnly group: 'org.mapstruct', name: 'mapstruct-processor', version: '1.3.0.Final'
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
@@ -48,6 +50,14 @@ jar {
                     file.text += it.moduleGroup + "\\:" + it.moduleName + "=" + it.moduleVersion + "\n"
                 }
         file.text += "#DYNAMIC_RUNTIME\n"
+        project
+                .getConfigurations()
+                .getByName("uses")
+                .resolvedConfiguration
+                .firstLevelModuleDependencies
+                .each {
+                    file.text += "R\\:" + it.moduleGroup + "\\:" + it.moduleName + "=" + it.moduleVersion + "\n"
+                }
         from(file)
     }
     manifest {

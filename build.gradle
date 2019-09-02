@@ -27,6 +27,8 @@ allprojects {
     targetCompatibility = 12
 
     configurations {
+        uses
+        runtime.extendsFrom uses
         dynamicImplementation
         implementation.extendsFrom dynamicImplementation
         testImplementation.extendsFrom compileOnly

@@ -6,6 +6,9 @@ import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import lombok.Synchronized;
+import lombok.extern.java.Log;
+import pl.mendroch.modularization.common.api.model.modules.Dependency;
+import pl.mendroch.modularization.core.runtime.RuntimeUpdateListener;
 import pl.mendroch.modularization.example.javafx.api.TabViewProvider;
 
 import java.util.Comparator;
@@ -14,7 +17,11 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 
-public class ApplicationView extends BorderPane {
+import static java.util.logging.Level.SEVERE;
+import static pl.mendroch.modularization.core.runtime.RuntimeManager.RUNTIME_MANAGER;
+
+@Log
+public class ApplicationView extends BorderPane implements RuntimeUpdateListener {
     private final Map<String, TabViewProvider> tabProviders = new HashMap<>();
     private final TabPane content = new TabPane();
     private final Menu viewMenu = new Menu("Views");
@@ -31,24 +38,37 @@ public class ApplicationView extends BorderPane {
         setCenter(content);
         setBottom(new StatusPane());
         initializeMenu();
-        initialize();
+        generateTabs();
+        RUNTIME_MANAGER.addListener(this);
     }
 
     private void initializeMenu() {
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("File");
         MenuItem closeItem = new MenuItem("Close");
+        MenuItem updateItem = new MenuItem("Update Sample view version");
+        updateItem.setOnAction(event -> {
+            try {
+                RUNTIME_MANAGER.update(
+                        new Dependency("pl.mendroch.modularization:javafx-sample-view@1.0-SNAPSHOT"),
+                        new Dependency("pl.mendroch.modularization:javafx-sample-view@1.1-SNAPSHOT")
+                );
+            } catch (Exception e) {
+                log.log(SEVERE, "Failed to override dependency version", e);
+            }
+        });
         closeItem.setOnAction(event -> {
             Platform.exit();
             System.exit(0);
         });
-        fileMenu.getItems().add(closeItem);
+        fileMenu.getItems().addAll(updateItem, closeItem);
         menuBar.getMenus().addAll(fileMenu, viewMenu);
         setTop(menuBar);
     }
 
     @Synchronized("tabProviders")
-    private void initialize() {
+    private void generateTabs() {
+        tabProviders.clear();
         ServiceLoader<TabViewProvider> tabViews = ServiceLoader.load(TabViewProvider.class);
         for (TabViewProvider tabViewProvider : tabViews) {
             tabProviders.put(tabViewProvider.getName(), tabViewProvider);
@@ -64,5 +84,10 @@ public class ApplicationView extends BorderPane {
                         })
                         .collect(Collectors.toList())
         );
+    }
+
+    @Override
+    public void afterUpdate() {
+        generateTabs();
     }
 }

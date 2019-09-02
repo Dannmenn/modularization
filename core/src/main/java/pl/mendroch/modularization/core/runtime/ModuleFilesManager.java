@@ -86,7 +86,7 @@ public enum ModuleFilesManager {
     private void onFileCreate(WatchEvent<?> event) {
         Path context = (Path) event.context();
         Path file = Paths.get(path.toString(), context.getFileName().toString());
-        if (Files.isRegularFile(file)) {
+        if (!Files.isDirectory(file)) {
             ModuleJarInfo loadedJarInfo = JarInfoLoader.loadModuleInformation(file);
             if (isDuplicated(loadedJarInfo.toString())) {
                 log.severe("Found duplicate for " + loadedJarInfo.toString());

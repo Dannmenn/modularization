@@ -12,6 +12,7 @@ import pl.mendroch.modularization.core.model.LoadedModuleReference;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -27,9 +28,11 @@ import static pl.mendroch.modularization.core.runtime.OverrideManager.OVERRIDE_M
 @Log
 public enum RuntimeManager {
     RUNTIME_MANAGER;
+    private final List<RuntimeUpdateListener> listeners = new CopyOnWriteArrayList<>();
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final ExecutorService executor = newCachedThreadPool(threadFactory("runtime-manager"));
+    private LoadedModuleReference parent;
     private LoadedModuleReference[] references;
 
     public void initialize(Node<ModuleJarInfo> root, Set<ModuleJarInfo> thirdPartyJars) {
@@ -65,14 +68,20 @@ public enum RuntimeManager {
 
     private void updateRoot(Node<ModuleJarInfo> root) {
         List<ModuleJarInfo> flattened = new GraphFlattener<>(root).flatten();
-        references = new ClasspathUpdater(flattened).updateClassLoaders(references);
-//        TODO("invoke on before/after classpath update");
-//        TODO("invoke change listeners");
+        for (RuntimeUpdateListener listener : listeners) {
+            listener.beforeUpdate();
+        }
+        references = new ClasspathUpdater(flattened).updateClassLoaders(references, parent);
+        for (RuntimeUpdateListener listener : listeners) {
+            listener.afterUpdate();
+        }
     }
 
     private void buildModulesGraph(Node<ModuleJarInfo> root, Set<ModuleJarInfo> thirdPartyJars) {
         List<ModuleJarInfo> flattened = new GraphFlattener<>(root).flatten();
-        references = new ClasspathBuilder(flattened).buildClassLoaders(thirdPartyJars);
+        ClasspathBuilder builder = new ClasspathBuilder(flattened);
+        references = builder.buildClassLoaders(thirdPartyJars);
+        parent = builder.getParent();
     }
 
     public void run() {
@@ -98,5 +107,9 @@ public enum RuntimeManager {
 
     public boolean isInitialized() {
         return initialized.get();
+    }
+
+    public void addListener(RuntimeUpdateListener listener) {
+        listeners.add(listener);
     }
 }

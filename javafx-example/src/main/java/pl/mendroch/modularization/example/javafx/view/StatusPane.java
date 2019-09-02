@@ -13,6 +13,8 @@ import pl.mendroch.modularization.core.runtime.ModuleChangeListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static java.util.logging.Level.SEVERE;
 import static javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE;
@@ -22,6 +24,7 @@ import static pl.mendroch.modularization.core.runtime.RuntimeManager.RUNTIME_MAN
 
 @Log
 public class StatusPane extends StatusBar implements ModuleChangeListener {
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Button infoButton = new Button("", new Glyph("FontAwesome", "INFO_CIRCLE"));
     private final Dialog<Boolean> dialog = new Dialog<>();
     private final List<String> infoMessages = new ArrayList<>();
@@ -36,11 +39,19 @@ public class StatusPane extends StatusBar implements ModuleChangeListener {
         dialog.setResultConverter(param -> {
             if (param.getButtonData() == OK_DONE) {
                 try {
-                    RUNTIME_MANAGER.update();
+                    executor.submit(() -> {
+                        try {
+                            RUNTIME_MANAGER.update();
+                        } catch (Exception e) {
+                            throw new IllegalStateException(e);
+                        }
+                    }).get();
                 } catch (Exception e) {
                     log.log(SEVERE, e.getMessage(), e);
                     return false;
                 }
+                infoMessages.clear();
+                getRightItems().remove(infoButton);
                 return true;
             }
             return false;

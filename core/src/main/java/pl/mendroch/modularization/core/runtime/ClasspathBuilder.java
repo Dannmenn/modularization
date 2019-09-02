@@ -1,5 +1,6 @@
 package pl.mendroch.modularization.core.runtime;
 
+import lombok.Getter;
 import pl.mendroch.modularization.common.api.loader.ThirdPartyModuleConfigurator;
 import pl.mendroch.modularization.common.api.model.modules.JarInfo;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
@@ -15,6 +16,8 @@ import java.util.stream.Collectors;
 
 class ClasspathBuilder {
     private final List<ModuleJarInfo> modules;
+    @Getter
+    private LoadedModuleReference parent;
 
     ClasspathBuilder(List<ModuleJarInfo> modules) {
         this.modules = modules;
@@ -43,6 +46,7 @@ class ClasspathBuilder {
             configureThirdPartyModules(layer);
             loader = layer.findLoader(moduleNames.get(0));
         }
+        parent = new LoadedModuleReference(null, null, conf, layer, loader);
         for (int i = modules.size() - 1; i >= 0; i--) {
             ModuleJarInfo module = modules.get(i);
             JarInfo jarInfo = module.getJarInfo();
