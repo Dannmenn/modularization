@@ -22,23 +22,24 @@ import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.logging.Level.SEVERE;
 import static pl.mendroch.modularization.application.internal.ApplicationArgumentName.LOADER;
 import static pl.mendroch.modularization.application.internal.ApplicationArgumentName.PATH;
 import static pl.mendroch.modularization.application.internal.util.ReflectionUtil.createInstanceWithOptionalParameters;
 import static pl.mendroch.modularization.common.api.DependencyGraphUtils.createDependencyGraph;
+import static pl.mendroch.modularization.common.internal.concurrent.ExceptionAwareThreadFactory.threadFactory;
 import static pl.mendroch.modularization.core.runtime.ModuleFilesManager.MODULE_FILES_MANAGER;
 import static pl.mendroch.modularization.core.runtime.OverrideManager.OVERRIDE_MANAGER;
 import static pl.mendroch.modularization.core.runtime.RuntimeManager.RUNTIME_MANAGER;
 
 @Log
 public class ApplicationLoader {
-    private final ExecutorService executor = Executors.newCachedThreadPool();
+    private final ExecutorService executor = newCachedThreadPool(threadFactory("application-loader"));
     private final Map<ApplicationArgumentName, String> parameters;
     private final CustomApplicationLoader loader;
 

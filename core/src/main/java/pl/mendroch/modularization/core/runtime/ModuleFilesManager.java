@@ -9,15 +9,16 @@ import java.nio.file.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static java.nio.file.StandardWatchEventKinds.*;
+import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.logging.Level.SEVERE;
+import static pl.mendroch.modularization.common.internal.concurrent.DaemonExceptionAwareThreadFactory.daemonThreadFactory;
 
 @Log
 public enum ModuleFilesManager {
     MODULE_FILES_MANAGER;
-    private final ExecutorService executor = Executors.newCachedThreadPool();
+    private final ExecutorService executor = newCachedThreadPool(daemonThreadFactory("module-file-manager"));
     private final List<ModuleJarInfo> modules = new CopyOnWriteArrayList<>();
     private final List<ModuleChangeListener> listeners = new CopyOnWriteArrayList<>();
     private Path path;

@@ -4,18 +4,19 @@ import pl.mendroch.modularization.common.internal.health.HealthEventImpl;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
 
+import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static pl.mendroch.modularization.common.internal.concurrent.ConcurrencyUtil.awaitFuture;
+import static pl.mendroch.modularization.common.internal.concurrent.DaemonExceptionAwareThreadFactory.daemonThreadFactory;
 
 public enum HealthRegister {
     HEALTH_REGISTER;
     private static final long KEEP_HISTORY_DELAY = Duration.ofDays(1).toMillis();
-    private final ScheduledExecutorService service = Executors.newScheduledThreadPool(0);
+    private final ScheduledExecutorService service = newScheduledThreadPool(0, daemonThreadFactory("health-register"));
     private final Map<Level, List<HealthEvent>> events = new HashMap<>();
     private Future<?> notifyFuture;
 

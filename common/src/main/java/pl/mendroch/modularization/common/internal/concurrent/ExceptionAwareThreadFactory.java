@@ -13,7 +13,7 @@ public class ExceptionAwareThreadFactory implements ThreadFactory {
     private final AtomicInteger threadNumber = new AtomicInteger(1);
     private final String name;
 
-    private ExceptionAwareThreadFactory(String name) {
+    ExceptionAwareThreadFactory(String name) {
         this.name = name;
     }
 
