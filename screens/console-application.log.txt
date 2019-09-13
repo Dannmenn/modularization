@@ -1,0 +1,36 @@
+Sep 13, 2019 3:00:06 PM pl.mendroch.modularization.application.console.api.ConsoleApplication main
+INFO: Application parameters: {PATH=D:\repos\modularization\core\src\test\resources\libs}
+Sep 13, 2019 3:00:06 PM pl.mendroch.modularization.application.console.api.ConsoleApplication main
+INFO: Loading custom configuration
+Sep 13, 2019 3:00:06 PM pl.mendroch.modularization.application.console.api.ConsoleApplication main
+INFO: Loading application
+Sep 13, 2019 3:00:06 PM pl.mendroch.modularization.application.api.ApplicationLoader lambda$load$0
+INFO: Building dependency graph
+Fallback to windows path: should not happened
+Sep 13, 2019 3:00:06 PM pl.mendroch.modularization.application.api.ApplicationLoader load
+INFO: Building dependency tree finished
+Sep 13, 2019 3:00:06 PM pl.mendroch.modularization.application.api.ApplicationLoader load
+INFO: Third party dependencies:[commons.lang3:3.3.2]
+Sep 13, 2019 3:00:06 PM pl.mendroch.modularization.application.api.ApplicationLoader load
+INFO: Obsolete dependencies:[]
+Sep 13, 2019 3:00:06 PM pl.mendroch.modularization.application.api.ApplicationLoader load
+INFO: Building module graph
+Sep 13, 2019 3:00:06 PM pl.mendroch.modularization.application.console.api.ConsoleApplication main
+INFO: Starting application
+Sep 13, 2019 3:00:06 PM pl.mendroch.modularization.application.console.api.ConsoleApplication main
+INFO: Exiting application
+Before initial print services
+StringValueProvider
+after initial print services
+Sep 13, 2019 3:00:38 PM pl.mendroch.modularization.core.runtime.ModuleFilesManager handleWatchEvent
+INFO: Event kind:ENTRY_CREATE. File affected: provider-1.1-SNAPSHOT.jar
+Sep 13, 2019 3:00:44 PM pl.mendroch.modularization.core.runtime.RuntimeManager lambda$update$0
+INFO: Building updated dependency graph
+Sep 13, 2019 3:00:44 PM pl.mendroch.modularization.core.runtime.RuntimeManager update
+INFO: Building updated dependency tree finished
+Sep 13, 2019 3:00:44 PM pl.mendroch.modularization.core.runtime.RuntimeManager update
+INFO: Third party dependencies which won't be updated:[commons.lang3:3.3.2]
+Sep 13, 2019 3:00:44 PM pl.mendroch.modularization.core.runtime.RuntimeManager update
+INFO: Obsolete dependencies:[pl.mendroch.modularization.test:provider:1.0-SNAPSHOT]
+UpdatedProviderValue
+UpdatedProviderValue

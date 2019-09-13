@@ -2,7 +2,7 @@
   <configuration default="false" name="ConsoleApplication" type="Application" factoryName="Application" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="pl.mendroch.modularization.application.console.api.ConsoleApplication" />
     <module name="console-application_main" />
-    <option name="PROGRAM_PARAMETERS" value="-Dskip.override.save=true D:\repos\modularization\common\src\test\resources\libs" />
+    <option name="PROGRAM_PARAMETERS" value="-Dskip.override.save=true D:\repos\modularization\core\src\test\resources\libs" />
     <option name="VM_PARAMETERS" value="-Dskip.override.save=true --add-exports java.base/jdk.internal.loader=pl.mendroch.modularization.core --add-exports java.base/jdk.internal.misc=pl.mendroch.modularization.core --add-opens java.base/java.lang.module=pl.mendroch.modularization.core --add-opens java.base/java.lang=pl.mendroch.modularization.core --add-opens java.base/jdk.internal.loader=pl.mendroch.modularization.core" />
     <extension name="coverage">
       <pattern>

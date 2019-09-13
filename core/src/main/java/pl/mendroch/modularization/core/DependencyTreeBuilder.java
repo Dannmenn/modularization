@@ -57,7 +57,7 @@ public class DependencyTreeBuilder {
         for (Vertex<Dependency> edge : graph.getEdges(vertex)) {
             Dependency dependency = edge.getValue();
             ModuleJarInfo jarInfo = mapper.get(dependency);
-            if (jarInfo == null && dependency instanceof OptionalDependency) {
+            if (jarInfo == null || dependency instanceof OptionalDependency) {
                 continue;
             }
             boolean visited = nodes.containsKey(jarInfo);

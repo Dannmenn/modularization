@@ -92,7 +92,7 @@ public enum ModuleFilesManager {
                 log.severe("Found duplicate for " + loadedJarInfo.toString());
             } else {
                 modules.add(loadedJarInfo);
-                notify("New module added: " + loadedJarInfo.toString());
+                notify("New module added: " + loadedJarInfo.getDescriptor().toNameAndVersion());
             }
         } else {
             log.warning("Added file is not a regular file");

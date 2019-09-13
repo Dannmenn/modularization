@@ -33,13 +33,21 @@ class ClasspathUpdater {
     LoadedModuleReference[] updateClassLoaders(LoadedModuleReference[] references, LoadedModuleReference parentReference) {
         LoadedModuleReference[] result = new LoadedModuleReference[modules.size()];
         LoadedModuleReference parent = parentReference;
+        boolean clearCaches = false;
         for (int i = modules.size() - 1, referenceIndex = references.length - 1; i >= 0; i--) {
             ModuleJarInfo module = modules.get(i);
             int tmpIndex = findModule(references, referenceIndex, module);
             if (tmpIndex >= 0) {
                 referenceIndex = tmpIndex - 1;
-                result[i] = useExistingClassLoader(references[tmpIndex], parent);
+                LoadedModuleReference reference = references[tmpIndex];
+                ClassLoader loader = reference.getLoader();
+                boolean parentChanged = loader.getParent().equals(parent.getLoader());
+                if (parentChanged) {
+                    clearCaches = true;
+                }
+                result[i] = useExistingClassLoader(reference, parent, parentChanged, clearCaches);
             } else {
+                clearCaches = true;
                 result[i] = createNewModuleReference(parent, module);
             }
             parent = result[i];
@@ -61,12 +69,14 @@ class ClasspathUpdater {
         return new LoadedModuleReference(moduleName, module, conf, layer, loader);
     }
 
-    private LoadedModuleReference useExistingClassLoader(LoadedModuleReference reference, LoadedModuleReference parent) {
-        ClassLoader loader = reference.getLoader();
-        if (loader.getParent().equals(parent.getLoader())) {
-            return reference;
+    private LoadedModuleReference useExistingClassLoader(LoadedModuleReference reference, LoadedModuleReference parent, boolean parentChanged, boolean clearCaches) {
+        if (parentChanged) {
+            return recreateLoadedModuleReference(parent, reference);
         }
-        return recreateLoadedModuleReference(parent, reference);
+        if (clearCaches) {
+            clearCaches(parent, reference.getLoader(), reference.getConfiguration());
+        }
+        return reference;
     }
 
     private LoadedModuleReference recreateLoadedModuleReference(LoadedModuleReference parent, LoadedModuleReference current) {
@@ -84,11 +94,15 @@ class ClasspathUpdater {
         ModuleLayer layer = current.getLayer();
         updateFieldWithReflection(conf, "cf", ModuleLayer.class, layer);
         updateFieldWithReflection(List.of(parent.getLayer()), "parents", ModuleLayer.class, layer);
-        updateFieldWithReflection(new ConcurrentHashMap<String, ClassLoader>(), "remotePackageToLoader", Loader.class, loader);
-        ((Loader) loader).initRemotePackageMap(conf, List.of(parent.getLayer()));
+        clearCaches(parent, loader, conf);
         return new LoadedModuleReference(
                 current.getModuleName(), current.getModule(), conf, layer, loader
         );
+    }
+
+    private void clearCaches(LoadedModuleReference parent, ClassLoader loader, Configuration conf) {
+        updateFieldWithReflection(new ConcurrentHashMap<String, ClassLoader>(), "remotePackageToLoader", Loader.class, loader);
+        ((Loader) loader).initRemotePackageMap(conf, List.of(parent.getLayer()));
     }
 
     private int findModule(LoadedModuleReference[] references, int referenceIndex, ModuleJarInfo module) {

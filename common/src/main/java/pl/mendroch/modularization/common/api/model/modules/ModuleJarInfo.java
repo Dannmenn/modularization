@@ -18,6 +18,6 @@ public class ModuleJarInfo {
 
     @Override
     public String toString() {
-        return jarInfo + ":" + descriptor.toNameAndVersion();
+        return descriptor.name() + ":" + jarInfo.getSpecificationVersion();
     }
 }
