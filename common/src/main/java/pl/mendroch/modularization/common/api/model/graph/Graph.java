@@ -13,14 +13,6 @@ public class Graph<K, V> {
         return new Builder<>();
     }
 
-    public void addVertex(Vertex<V> vertex) {
-        addVertexInternal(vertex);
-    }
-
-    public void addEdge(Vertex<V> from, Vertex<V> to) {
-        addVertexInternal(from).add(to);
-    }
-
     private List<Vertex<V>> addVertexInternal(Vertex<V> vertex) {
         return edges.computeIfAbsent(vertex, v -> new ArrayList<>());
     }
@@ -53,19 +45,16 @@ public class Graph<K, V> {
     public static class Builder<S, T> {
         private final Graph<S, T> graph = new Graph<>();
 
-        public Builder dependencyMapper(Map<T, S> mapper) {
+        public void dependencyMapper(Map<T, S> mapper) {
             graph.mapper = mapper;
-            return this;
         }
 
-        public Builder addVertex(Vertex<T> vertex) {
+        public void addVertex(Vertex<T> vertex) {
             graph.addVertexInternal(vertex);
-            return this;
         }
 
-        public Builder addEdge(Vertex<T> from, Vertex<T> to) {
+        public void addEdge(Vertex<T> from, Vertex<T> to) {
             graph.addVertexInternal(from).add(to);
-            return this;
         }
 
         public Graph<S, T> createGraph() {

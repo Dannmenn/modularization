@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.module.Configuration.resolveAndBind;
-import static java.util.Collections.emptyList;
 import static java.util.logging.Level.SEVERE;
 import static java.util.stream.Collectors.toSet;
 
@@ -41,7 +40,7 @@ class ClasspathUpdater {
                 referenceIndex = tmpIndex - 1;
                 LoadedModuleReference reference = references[tmpIndex];
                 ClassLoader loader = reference.getLoader();
-                boolean parentChanged = loader.getParent().equals(parent.getLoader());
+                boolean parentChanged = !loader.getParent().equals(parent.getLoader());
                 if (parentChanged) {
                     clearCaches = true;
                 }
@@ -84,19 +83,12 @@ class ClasspathUpdater {
         updateParentFieldWithUnsafe(parent.getLoader(), ClassLoader.class, loader);
         updateParentFieldWithUnsafe(parent.getLoader(), Loader.class, loader);
         Configuration configuration = current.getConfiguration();
-        updateFieldWithReflection(emptyList(), "parents", Configuration.class, configuration);
-        Configuration conf = resolveAndBind(
-                new ModuleFinderDelegate(configuration),
-                List.of(parent.getConfiguration()),
-                ModuleFinder.of(),
-                List.of(current.getModuleName())
-        );
+        updateFieldWithReflection(List.of(parent.getConfiguration()), "parents", Configuration.class, configuration);
         ModuleLayer layer = current.getLayer();
-        updateFieldWithReflection(conf, "cf", ModuleLayer.class, layer);
         updateFieldWithReflection(List.of(parent.getLayer()), "parents", ModuleLayer.class, layer);
-        clearCaches(parent, loader, conf);
+        clearCaches(parent, loader, configuration);
         return new LoadedModuleReference(
-                current.getModuleName(), current.getModule(), conf, layer, loader
+                current.getModuleName(), current.getModule(), configuration, layer, loader
         );
     }
 

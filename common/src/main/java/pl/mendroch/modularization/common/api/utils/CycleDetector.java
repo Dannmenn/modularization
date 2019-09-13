@@ -26,7 +26,7 @@ class CycleDetector<V> {
     }
 
     private boolean hasCycle(int i) {
-        if (i == -1) return false;//TODO: validate if it can happen? it should throw missing dependency exception
+        if (i == -1) return false;
         if (recStack[i]) return true;
         if (visited[i]) return false;
 

@@ -1,4 +1,4 @@
-package pl.mendroch.modularization.common.internal.concurrent;
+package pl.mendroch.modularization.common.api.concurrent;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;

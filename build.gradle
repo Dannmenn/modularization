@@ -34,3 +34,10 @@ allprojects {
         testImplementation.extendsFrom compileOnly
     }
 }
+
+ext {
+    aliases = [
+            "org.controlsfx:controlsfx"                    : 'org.controlsfx.controls',
+            "pl.mendroch.modularization:javafx-example-api": 'pl.mendroch.modularization.example.javafx.api'
+    ]
+}

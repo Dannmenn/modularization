@@ -1,7 +1,6 @@
 package pl.mendroch.modularization.core.runtime;
 
 import lombok.extern.java.Log;
-import pl.mendroch.modularization.common.api.annotation.PerformanceOptimizationHint;
 import pl.mendroch.modularization.common.api.model.modules.Dependency;
 import pl.mendroch.modularization.core.DependencyGraphUtils;
 
@@ -26,7 +25,6 @@ public enum OverrideManager {
     OVERRIDE_MANAGER;
     private final Map<Dependency, Dependency> overrides = new HashMap<>();
     private final Path propertiesFile = Paths.get("module-overrides.properties");
-    @PerformanceOptimizationHint
     private int cleanupDelay = 10;
 
     OverrideManager() {
@@ -34,11 +32,18 @@ public enum OverrideManager {
             Properties properties = new Properties();
             properties.load(inputStream);
             for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-                overrides.put(new Dependency(entry.getKey().toString()), new Dependency(entry.getValue().toString()));
+                overrides.put(parseDependency(entry.getKey()), parseDependency(entry.getValue()));
             }
         } catch (Exception e) {
             HEALTH_REGISTER.registerEvent(SEVERE, e);
         }
+    }
+
+    private Dependency parseDependency(Object value) {
+        String stringValue = (String) value;
+        String[] parts = stringValue.split("@");
+        assert parts.length == 2 : "Invalid dependency. Should have format {moduleName}@{version}";
+        return new Dependency(parts[0], parts[1]);
     }
 
     public synchronized void override(Dependency existing, Dependency override) {

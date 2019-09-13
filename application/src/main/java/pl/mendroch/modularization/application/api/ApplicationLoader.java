@@ -5,11 +5,11 @@ import pl.mendroch.modularization.application.api.loaders.ApplicationConfigurato
 import pl.mendroch.modularization.application.api.loaders.ApplicationModuleLoader;
 import pl.mendroch.modularization.application.api.loaders.CustomApplicationLoader;
 import pl.mendroch.modularization.application.internal.ApplicationArgumentName;
+import pl.mendroch.modularization.common.api.concurrent.ConcurrencyUtil;
 import pl.mendroch.modularization.common.api.model.graph.Graph;
 import pl.mendroch.modularization.common.api.model.modules.Dependency;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
 import pl.mendroch.modularization.common.api.model.tree.Node;
-import pl.mendroch.modularization.common.internal.concurrent.ConcurrencyUtil;
 import pl.mendroch.modularization.core.DependencyTreeBuilder;
 
 import java.io.IOException;
@@ -31,7 +31,7 @@ import static java.util.logging.Level.SEVERE;
 import static pl.mendroch.modularization.application.internal.ApplicationArgumentName.LOADER;
 import static pl.mendroch.modularization.application.internal.ApplicationArgumentName.PATH;
 import static pl.mendroch.modularization.application.internal.util.ReflectionUtil.createInstanceWithOptionalParameters;
-import static pl.mendroch.modularization.common.internal.concurrent.ExceptionAwareThreadFactory.threadFactory;
+import static pl.mendroch.modularization.common.api.concurrent.ExceptionAwareThreadFactory.threadFactory;
 import static pl.mendroch.modularization.core.DependencyGraphUtils.createDependencyGraph;
 import static pl.mendroch.modularization.core.runtime.ModuleFilesManager.MODULE_FILES_MANAGER;
 import static pl.mendroch.modularization.core.runtime.OverrideManager.OVERRIDE_MANAGER;

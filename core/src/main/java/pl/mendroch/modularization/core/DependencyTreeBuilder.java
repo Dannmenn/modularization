@@ -90,7 +90,7 @@ public class DependencyTreeBuilder {
             Version latest = latestVersions.get(jarInfo.getName());
             if (jarIsObsolete(latest, jarVersion)) {
                 obsolete.add(jarInfo);
-            } else if (!jars.contains(dependency) && !skipThirdPartyGroups.contains(dependency.getGroup())) {
+            } else if (!jars.contains(dependency) && !skipThirdPartyGroups.startsWith(dependency.getName())) {
                 thirdPartyJars.add(mapper.get(dependency));
             }
         }

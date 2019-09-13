@@ -14,8 +14,8 @@ public class ExampleEntryPoint {
         printServices();
         System.out.println("after initial print services");
         RUNTIME_MANAGER.update(
-                new Dependency("pl.mendroch.modularization.test:provider@1.0-SNAPSHOT"),
-                new Dependency("pl.mendroch.modularization.test:provider@1.1-SNAPSHOT")
+                new Dependency("pl.mendroch.modularization.example.provider", "1.0-SNAPSHOT"),
+                new Dependency("pl.mendroch.modularization.example.provider", "1.1-SNAPSHOT")
         );
         printServices();
         System.exit(0);

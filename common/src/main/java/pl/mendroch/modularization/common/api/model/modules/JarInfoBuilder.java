@@ -1,6 +1,7 @@
 package pl.mendroch.modularization.common.api.model.modules;
 
 import java.lang.module.ModuleDescriptor;
+import java.lang.module.ModuleDescriptor.Version;
 import java.nio.file.Path;
 
 public class JarInfoBuilder {
@@ -56,10 +57,10 @@ public class JarInfoBuilder {
 
     public JarInfoBuilder setMissing(ModuleDescriptor descriptor) {
         if (name == null || name.length() == 0) {
-            name = descriptor.name() + ":" + fileName.substring(0, fileName.indexOf(".jar"));
+            name = descriptor.name();
         }
         if (specificationVersion == null || specificationVersion.length() == 0) {
-            specificationVersion = "1.0.0";
+            specificationVersion = descriptor.version().map(Version::toString).orElse("1.0.0");
         }
         return this;
     }

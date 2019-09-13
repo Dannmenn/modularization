@@ -10,8 +10,8 @@ import java.util.logging.Level;
 
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static java.util.concurrent.TimeUnit.DAYS;
-import static pl.mendroch.modularization.common.internal.concurrent.ConcurrencyUtil.awaitFuture;
-import static pl.mendroch.modularization.common.internal.concurrent.DaemonExceptionAwareThreadFactory.daemonThreadFactory;
+import static pl.mendroch.modularization.common.api.concurrent.ConcurrencyUtil.awaitFuture;
+import static pl.mendroch.modularization.common.api.concurrent.DaemonExceptionAwareThreadFactory.daemonThreadFactory;
 
 public enum HealthRegister {
     HEALTH_REGISTER;

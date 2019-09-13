@@ -1,7 +1,7 @@
-module pl.mendroch.modularization.example.main {
+module pl.mendroch.example.modularization.main {
     exports pl.mendroch.modularization.example;
     uses pl.mendroch.modularization.example.service.ValueProvider;
-    requires pl.mendroch.modularization.example.service;
+    requires pl.mendroch.example.modularization.service;
     requires commons.lang3;
     requires pl.mendroch.modularization.core;
     requires pl.mendroch.modularization.common;

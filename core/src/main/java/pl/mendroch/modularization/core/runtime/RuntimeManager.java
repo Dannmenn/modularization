@@ -19,8 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.logging.Level.SEVERE;
+import static pl.mendroch.modularization.common.api.concurrent.ExceptionAwareThreadFactory.threadFactory;
 import static pl.mendroch.modularization.common.api.health.HealthRegister.HEALTH_REGISTER;
-import static pl.mendroch.modularization.common.internal.concurrent.ExceptionAwareThreadFactory.threadFactory;
 import static pl.mendroch.modularization.core.DependencyGraphUtils.createDependencyGraph;
 import static pl.mendroch.modularization.core.runtime.ModuleFilesManager.MODULE_FILES_MANAGER;
 import static pl.mendroch.modularization.core.runtime.OverrideManager.OVERRIDE_MANAGER;

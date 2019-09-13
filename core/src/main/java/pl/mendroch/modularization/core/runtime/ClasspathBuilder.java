@@ -1,7 +1,7 @@
 package pl.mendroch.modularization.core.runtime;
 
 import lombok.Getter;
-import pl.mendroch.modularization.common.api.loader.ThirdPartyModuleConfigurator;
+import pl.mendroch.modularization.common.api.loader.ModuleConfigurator;
 import pl.mendroch.modularization.common.api.model.modules.JarInfo;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
 import pl.mendroch.modularization.core.model.LoadedModuleReference;
@@ -43,7 +43,6 @@ class ClasspathBuilder {
                     moduleNames
             );
             layer = layer.defineModulesWithOneLoader(conf, loader);
-            configureThirdPartyModules(layer);
             loader = layer.findLoader(moduleNames.get(0));
         }
         parent = new LoadedModuleReference(null, null, conf, layer, loader);
@@ -61,12 +60,13 @@ class ClasspathBuilder {
             loader = layer.findLoader(moduleName);
             result[i] = new LoadedModuleReference(moduleName, module, conf, layer, loader);
         }
+        configureModules(layer);
         return result;
     }
 
-    private void configureThirdPartyModules(ModuleLayer layer) {
-        ServiceLoader<ThirdPartyModuleConfigurator> configurators = ServiceLoader.load(ThirdPartyModuleConfigurator.class);
-        for (ThirdPartyModuleConfigurator configurator : configurators) {
+    private void configureModules(ModuleLayer layer) {
+        ServiceLoader<ModuleConfigurator> configurators = ServiceLoader.load(ModuleConfigurator.class);
+        for (ModuleConfigurator configurator : configurators) {
             configurator.configure(layer);
         }
     }

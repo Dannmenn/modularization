@@ -1,4 +1,4 @@
-package pl.mendroch.modularization.common.internal.concurrent;
+package pl.mendroch.modularization.common.api.concurrent;
 
 import lombok.extern.java.Log;
 

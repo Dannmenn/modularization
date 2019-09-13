@@ -2,7 +2,6 @@ package pl.mendroch.modularization.core;
 
 import org.junit.Before;
 import org.junit.Test;
-import pl.mendroch.modularization.common.api.model.modules.Dependency;
 import pl.mendroch.modularization.common.api.model.modules.JarInfo;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
 import pl.mendroch.modularization.core.utils.JarUtils;
@@ -11,7 +10,7 @@ import java.io.File;
 import java.lang.module.ModuleDescriptor;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Set;
+import java.util.Properties;
 
 import static java.util.jar.JarFile.MANIFEST_NAME;
 import static org.junit.Assert.*;
@@ -52,11 +51,11 @@ public class SingleJarInfoLoaderTest {
 
         assertNotNull(moduleJarInfo);
         assertNotNull(descriptor);
-        assertTrue(moduleJarInfo.getDependencies().isEmpty());
+        assertTrue(moduleJarInfo.getDependencyVersions().isEmpty());
         assertEquals("1.0.2", jarInfo.getSpecificationVersion());
         assertEquals("pl.mendroch.modularization", descriptor.toNameAndVersion());
         assertTrue(jarInfo.toString().endsWith("1.0.2"));
-        assertTrue(moduleJarInfo.toString().endsWith("1.0.2:pl.mendroch.modularization"));
+        assertEquals("pl.mendroch.modularization@1.0.2", moduleJarInfo.toString());
     }
 
     @Test
@@ -73,15 +72,15 @@ public class SingleJarInfoLoaderTest {
         ModuleJarInfo moduleJarInfo = JarInfoLoader.loadModuleInformation(jarWithDependencies);
         JarInfo jarInfo = moduleJarInfo.getJarInfo();
         ModuleDescriptor descriptor = moduleJarInfo.getDescriptor();
-        Set<Dependency> dependencies = moduleJarInfo.getDependencies();
+        Properties dependencies = moduleJarInfo.getDependencyVersions();
 
         assertNotNull(moduleJarInfo);
         assertNotNull(descriptor);
         assertNotNull(dependencies);
         assertEquals("1.0.2", jarInfo.getSpecificationVersion());
         assertEquals("pl.mendroch.modularization", descriptor.toNameAndVersion());
-        assertEquals("[pl.mendroch.modularization:service@1.0.0]", dependencies.toString());
+        assertEquals("{pl.mendroch.modularization:service=1.0.0}", dependencies.toString());
         assertTrue(jarInfo.toString().endsWith("1.0.2"));
-        assertTrue(moduleJarInfo.toString().endsWith("1.0.2:pl.mendroch.modularization"));
+        assertEquals("pl.mendroch.modularization@1.0.2", moduleJarInfo.toString());
     }
 }

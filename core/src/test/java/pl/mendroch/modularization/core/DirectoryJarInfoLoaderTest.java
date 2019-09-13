@@ -19,22 +19,13 @@ public class DirectoryJarInfoLoaderTest {
         List<ModuleJarInfo> moduleJarInfos = loadModulesInformation(directory);
         moduleJarInfos.sort(Comparator.comparing(o -> o.getDescriptor().toNameAndVersion()));
         assertEquals(4, moduleJarInfos.size());
-        validateModuleInfo(moduleJarInfos.get(0),
-                "pl.mendroch.modularization.example.main",
-                "[org.apache.commons:commons-lang3@3.3.2, pl.mendroch.modularization.test:provider@1.0-SNAPSHOT]");
-        validateModuleInfo(moduleJarInfos.get(1),
-                "pl.mendroch.modularization.example.provider",
-                "[org.apache.commons:commons-lang3@3.3.2, pl.mendroch.modularization.test:service@1.0-SNAPSHOT]");
-        validateModuleInfo(moduleJarInfos.get(2),
-                "pl.mendroch.modularization.example.provider",
-                "[org.apache.commons:commons-lang3@3.3.2, pl.mendroch.modularization.test:service@1.0-SNAPSHOT]");
-        validateModuleInfo(moduleJarInfos.get(3),
-                "pl.mendroch.modularization.example.service",
-                "[]");
+        validateModuleInfo(moduleJarInfos.get(0), "pl.mendroch.example.modularization.main");
+        validateModuleInfo(moduleJarInfos.get(1), "pl.mendroch.example.modularization.provider");
+        validateModuleInfo(moduleJarInfos.get(2), "pl.mendroch.example.modularization.provider");
+        validateModuleInfo(moduleJarInfos.get(3), "pl.mendroch.example.modularization.service");
     }
 
-    private void validateModuleInfo(ModuleJarInfo moduleJarInfo, String expectedName, String expectedDependencies) {
+    private void validateModuleInfo(ModuleJarInfo moduleJarInfo, String expectedName) {
         assertEquals(expectedName, moduleJarInfo.getDescriptor().toNameAndVersion());
-        assertEquals(expectedDependencies, String.valueOf(moduleJarInfo.getDependencies()));
     }
 }

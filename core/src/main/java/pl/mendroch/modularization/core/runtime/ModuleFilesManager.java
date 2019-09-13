@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutorService;
 import static java.nio.file.StandardWatchEventKinds.*;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.logging.Level.SEVERE;
-import static pl.mendroch.modularization.common.internal.concurrent.DaemonExceptionAwareThreadFactory.daemonThreadFactory;
+import static pl.mendroch.modularization.common.api.concurrent.DaemonExceptionAwareThreadFactory.daemonThreadFactory;
 
 @Log
 public enum ModuleFilesManager {

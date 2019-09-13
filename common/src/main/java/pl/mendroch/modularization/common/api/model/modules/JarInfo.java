@@ -23,6 +23,6 @@ public class JarInfo {
 
     @Override
     public String toString() {
-        return name + ":" + specificationVersion;
+        return name + "@" + specificationVersion;
     }
 }

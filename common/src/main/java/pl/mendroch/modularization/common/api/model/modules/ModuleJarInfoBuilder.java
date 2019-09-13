@@ -3,23 +3,17 @@ package pl.mendroch.modularization.common.api.model.modules;
 import lombok.Getter;
 
 import java.lang.module.ModuleDescriptor;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Properties;
 
 @SuppressWarnings("UnusedReturnValue")
 public class ModuleJarInfoBuilder {
     private JarInfo jarInfo;
-    private Set<Dependency> dependencies = new HashSet<>();
     @Getter
     private ModuleDescriptor descriptor;
+    private Properties dependencyVersions = new Properties();
 
     public ModuleJarInfoBuilder setJarInfo(JarInfo jarInfo) {
         this.jarInfo = jarInfo;
-        return this;
-    }
-
-    public ModuleJarInfoBuilder setDependencies(Set<Dependency> dependencies) {
-        this.dependencies = dependencies;
         return this;
     }
 
@@ -28,7 +22,11 @@ public class ModuleJarInfoBuilder {
         return this;
     }
 
+    public void setDependencyVersions(Properties dependencyVersions) {
+        this.dependencyVersions = dependencyVersions;
+    }
+
     public ModuleJarInfo createModuleJarInfo() {
-        return new ModuleJarInfo(jarInfo, dependencies, descriptor);
+        return new ModuleJarInfo(jarInfo, dependencyVersions, descriptor);
     }
 }

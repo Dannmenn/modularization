@@ -8,20 +8,12 @@ import lombok.Getter;
 @EqualsAndHashCode
 @AllArgsConstructor
 public class Dependency {
-    private final String group;
-    private final String artifact;
+    public static final String UNSPECIFIED = "unspecified";
+    private final String name;
     private final String version;
-
-    public Dependency(String text) {
-        String[] firstPart = text.split(":");
-        String[] secondPart = firstPart[1].split("@");
-        this.group = firstPart[0];
-        this.artifact = secondPart[0];
-        this.version = secondPart[1];
-    }
 
     @Override
     public String toString() {
-        return group + ":" + artifact + "@" + version;
+        return name + "@" + version;
     }
 }

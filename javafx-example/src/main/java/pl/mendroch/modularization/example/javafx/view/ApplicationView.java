@@ -50,8 +50,8 @@ public class ApplicationView extends BorderPane implements RuntimeUpdateListener
         updateItem.setOnAction(event -> {
             try {
                 RUNTIME_MANAGER.update(
-                        new Dependency("pl.mendroch.modularization:javafx-sample-view@1.0-SNAPSHOT"),
-                        new Dependency("pl.mendroch.modularization:javafx-sample-view@1.1-SNAPSHOT")
+                        new Dependency("pl.mendroch.example.modularization.javafx.sample", "1.0-SNAPSHOT"),
+                        new Dependency("pl.mendroch.example.modularization.javafx.sample", "1.1-SNAPSHOT")
                 );
             } catch (Exception e) {
                 log.log(SEVERE, "Failed to override dependency version", e);

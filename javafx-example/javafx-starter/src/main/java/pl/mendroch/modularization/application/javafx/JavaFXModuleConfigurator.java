@@ -1,9 +1,9 @@
 package pl.mendroch.modularization.application.javafx;
 
 import jdk.internal.module.Modules;
-import pl.mendroch.modularization.common.api.loader.ThirdPartyModuleConfigurator;
+import pl.mendroch.modularization.common.api.loader.ModuleConfigurator;
 
-public class JavaFXThirdPartyModuleConfigurator implements ThirdPartyModuleConfigurator {
+public class JavaFXModuleConfigurator implements ModuleConfigurator {
     @Override
     public void configure(ModuleLayer layer) {
         //noinspection SimplifyOptionalCallChains

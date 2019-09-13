@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.lang.module.ModuleDescriptor;
-import java.util.Set;
+import java.util.Properties;
 
 @Getter
 @AllArgsConstructor
@@ -13,11 +13,11 @@ import java.util.Set;
 public class ModuleJarInfo {
     @EqualsAndHashCode.Include
     private final JarInfo jarInfo;
-    private final Set<Dependency> dependencies;
+    private final Properties dependencyVersions;
     private final ModuleDescriptor descriptor;
 
     @Override
     public String toString() {
-        return descriptor.name() + ":" + jarInfo.getSpecificationVersion();
+        return descriptor.name() + "@" + jarInfo.getSpecificationVersion();
     }
 }

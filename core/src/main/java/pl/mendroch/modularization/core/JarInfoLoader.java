@@ -1,6 +1,8 @@
 package pl.mendroch.modularization.core;
 
-import pl.mendroch.modularization.common.api.model.modules.*;
+import pl.mendroch.modularization.common.api.model.modules.JarInfo;
+import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
+import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfoBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,8 +11,9 @@ import java.lang.module.ModuleFinder;
 import java.lang.module.ModuleReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -75,7 +78,7 @@ public final class JarInfoLoader {
                             try (InputStream inputStream = jarFile.getInputStream(entry)) {
                                 Properties dependencies = new Properties();
                                 dependencies.load(inputStream);
-                                builder.setDependencies(convertPropertiesToDependencies(dependencies));
+                                builder.setDependencyVersions(dependencies);
                             }
                         }
                     } catch (IOException e) {
@@ -83,21 +86,6 @@ public final class JarInfoLoader {
                     }
                 }));
         return builder.createModuleJarInfo();
-    }
-
-    private static Set<Dependency> convertPropertiesToDependencies(Properties properties) {
-        Set<Dependency> dependencies = new TreeSet<>(Comparator.comparing(Dependency::toString));
-        for (Entry<Object, Object> entry : properties.entrySet()) {
-            String key = (String) entry.getKey();
-            String[] parts = key.split(":");
-            assert parts.length >= 2 : "Invalid jar name format: " + key;
-            if (parts.length > 2) {
-                dependencies.add(new OptionalDependency(parts[1], parts[2], (String) entry.getValue()));
-            } else {
-                dependencies.add(new Dependency(parts[0], parts[1], (String) entry.getValue()));
-            }
-        }
-        return dependencies;
     }
 
     private static ZipEntry getDependenciesEntry(JarFile jarFile) {
