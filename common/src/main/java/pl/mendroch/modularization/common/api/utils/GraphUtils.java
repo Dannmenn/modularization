@@ -2,14 +2,16 @@ package pl.mendroch.modularization.common.api.utils;
 
 import pl.mendroch.modularization.common.api.model.graph.Graph;
 import pl.mendroch.modularization.common.api.model.graph.Vertex;
+import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
+
+import java.util.List;
 
 public final class GraphUtils {
     private GraphUtils() {
         //Hide implicit constructor
     }
 
-    public static boolean isCyclic(Graph graph, Vertex entry) {
-        //noinspection unchecked
-        return new CycleDetector(graph, entry).isCyclic();
+    public static List<ModuleJarInfo> flatten(Graph graph, Vertex entry) {
+        return new CycleFlattener(graph, entry).flatten();
     }
 }

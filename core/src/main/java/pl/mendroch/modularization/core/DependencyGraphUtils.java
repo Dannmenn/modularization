@@ -23,8 +23,8 @@ public final class DependencyGraphUtils {
         //Hide implicit constructor
     }
 
-    public static Graph<ModuleJarInfo, Dependency> createDependencyGraph(Collection<ModuleJarInfo> modules, Map<Dependency, Dependency> overrides) {
-        Builder<ModuleJarInfo, Dependency> builder = Graph.builder();
+    public static Graph createDependencyGraph(Collection<ModuleJarInfo> modules, Map<Dependency, Dependency> overrides) {
+        Builder builder = Graph.builder();
         Map<ModuleJarInfo, Dependency> mapper = new HashMap<>();
         Map<Vertex<Dependency>, List<Dependency>> dependencies = new HashMap<>();
         Map<String, Map<String, Vertex<Dependency>>> dependencyMapper = new HashMap<>();
@@ -34,7 +34,7 @@ public final class DependencyGraphUtils {
             ModuleDescriptor descriptor = module.getDescriptor();
             Dependency moduleDependency = getModuleAsDependency(overrides, mapper, module);
             if (moduleDependency == null) continue;
-            Vertex<Dependency> moduleVertex = vertexOf(moduleDependency);
+            Vertex<Dependency> moduleVertex = vertexOf(moduleDependency, descriptor.packages().size());
             addVertexMappings(dependencyMapper, descriptor, moduleDependency, moduleVertex);
             descriptor.uses().forEach(s -> uses.computeIfAbsent(s, s1 -> new ArrayList<>()).add(moduleVertex));
             descriptor.provides().forEach(s -> provides.computeIfAbsent(s.service(), s1 -> new ArrayList<>()).add(moduleVertex));
@@ -62,7 +62,7 @@ public final class DependencyGraphUtils {
         return builder.createGraph();
     }
 
-    private static void createDependenciesBasedOnServices(Builder<ModuleJarInfo, Dependency> builder, Map<String, List<Vertex<Dependency>>> uses, Map<String, List<Vertex<Dependency>>> provides) {
+    private static void createDependenciesBasedOnServices(Builder builder, Map<String, List<Vertex<Dependency>>> uses, Map<String, List<Vertex<Dependency>>> provides) {
         uses.forEach((use, vertices) -> {
             List<Vertex<Dependency>> providers = provides.get(use);
             if (!providers.isEmpty()) {
@@ -76,7 +76,7 @@ public final class DependencyGraphUtils {
         });
     }
 
-    private static void createEdgesForDependencies(Builder<ModuleJarInfo, Dependency> builder, Map<Vertex<Dependency>, List<Dependency>> dependencies, Map<String, Map<String, Vertex<Dependency>>> dependencyMapper) {
+    private static void createEdgesForDependencies(Builder builder, Map<Vertex<Dependency>, List<Dependency>> dependencies, Map<String, Map<String, Vertex<Dependency>>> dependencyMapper) {
         dependencies.forEach((vertex, moduleDependencies) -> {
             for (Dependency dependency : moduleDependencies) {
                 Map<String, Vertex<Dependency>> vertexMap = dependencyMapper.get(dependency.getName());

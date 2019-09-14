@@ -1,93 +1,41 @@
 package pl.mendroch.modularization.core.graph;
 
-import pl.mendroch.modularization.common.api.model.tree.Node;
+import pl.mendroch.modularization.common.api.model.graph.Vertex;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GraphFlattener<T> {
-    private final Map<Node<T>, NodeStatistics> statistics = new HashMap<>();
-    private final Node<T> root;
+    private final Map<Vertex<T>, List<Vertex<T>>> edges;
+    private final Vertex<T> entry;
+    private final List<Vertex<T>> flattened = new ArrayList<>();
+    private final Map<Vertex, Boolean> visited = new HashMap<>();
+    private final Map<Vertex, Boolean> recStack = new HashMap<>();
 
-    public GraphFlattener(Node<T> root) {
-        this.root = root;
-        calculateStatistics(root);
+    public GraphFlattener(Map<Vertex<T>, List<Vertex<T>>> edges, Vertex<T> entry) {
+        this.edges = edges;
+        this.entry = entry;
     }
 
-    private void calculateStatistics(Node<T> root) {
-        if (statistics.containsKey(root)) {
-            statistics.get(root).in++;
-            return;
-        }
-        statistics.put(root, new NodeStatistics(root));
-        for (Node<T> child : root.getChildren()) {
-            calculateStatistics(child);
-        }
+    List<T> flatten() {
+        flatten(entry);
+        return flattened.stream().map(Vertex::getValue).collect(Collectors.toList());
     }
 
-    public List<T> flatten() {
-        List<T> result = new LinkedList<>();
-        Node<T> tmp = this.root;
-        while (!tmp.getChildren().isEmpty()) {
-            if (tmp.getChildren().size() == 1) {
-                result.add(tmp.getValue());
-                tmp = tmp.getChildren().get(0);
-            } else {
-                NodeStatistics candidate = null;
-                for (Node<T> child : tmp.getChildren()) {
-                    NodeStatistics nodeStatistics = statistics.get(child);
-                    if (candidate == null || nodeStatistics.compareTo(candidate) > 0) {
-                        candidate = nodeStatistics;
-                    }
-                }
-                assert candidate != null;
-                Node<T> node = candidate.node;
-                statistics.remove(node);
-                List<Node<T>> nextChildren = node.getChildren();
-                for (Node<T> child : tmp.getChildren()) {
-                    if (child.equals(node)) continue;
-                    NodeStatistics childStatistics = statistics.get(child);
-                    childStatistics.addCurrentState();
-                    if (nextChildren.contains(child)) {
-                        childStatistics.in--;
-                    } else {
-                        node.addChild(child);
-                    }
-                }
-                result.add(tmp.getValue());
-                tmp = node;
-            }
-        }
-        result.add(tmp.getValue());
-        return result;
-    }
+    private boolean flatten(Vertex<T> vertex) {
+        if (recStack.getOrDefault(vertex, false)) throw new IllegalStateException("Found cycle in a graph");
+        if (visited.getOrDefault(vertex, false)) return false;
 
-    private class NodeStatistics implements Comparable<NodeStatistics> {
-        private final Node<T> node;
-        private int in = 0;
-        private int out;
-        private int sum = 0;
-
-        private NodeStatistics(Node<T> node) {
-            this.node = node;
-            out = node.getChildren().size();
+        visited.put(vertex, true);
+        recStack.put(vertex, true);
+        for (Vertex<T> edge : edges.getOrDefault(vertex, Collections.emptyList())) {
+            if (flatten(edge))
+                return true;
         }
 
-        private void addCurrentState() {
-            sum += in + out;
-        }
+        flattened.add(vertex);
+        recStack.put(vertex, false);
 
-        @Override
-        public int compareTo(NodeStatistics o) {
-            int result = Integer.compare(o.in, in);
-            if (result != 0) return result;
-            result = Integer.compare(o.out, out);
-            if (result != 0) return result;
-            result = Integer.compare(sum, o.sum);
-            if (result != 0) return result;
-            return node.toString().compareTo(o.node.toString());
-        }
+        return false;
     }
 }

@@ -1,17 +1,15 @@
 package pl.mendroch.modularization.application.console.api;
 
 import lombok.extern.java.Log;
+import pl.mendroch.modularization.application.api.ApplicationArgumentName;
 import pl.mendroch.modularization.application.api.ApplicationLoader;
-import pl.mendroch.modularization.application.internal.ApplicationArgumentName;
 
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import static pl.mendroch.modularization.application.api.ApplicationConstants.APPLICATION_LOADER_CLASS;
-import static pl.mendroch.modularization.application.internal.ApplicationArgumentName.LOADER;
-import static pl.mendroch.modularization.application.internal.ApplicationArgumentName.PATH;
+import static pl.mendroch.modularization.application.api.ApplicationArgumentName.PATH;
 
 @Log
 public class ConsoleApplication {
@@ -21,9 +19,6 @@ public class ConsoleApplication {
 
         log.info("Application parameters: " + parameters.toString());
         ApplicationLoader application = new ApplicationLoader(parameters);
-
-        log.info("Loading custom configuration");
-        application.loadCustomConfiguration();
 
         log.info("Loading application");
         application.load();
@@ -35,14 +30,7 @@ public class ConsoleApplication {
 
     private static Map<ApplicationArgumentName, String> prepareParameters(String[] args) {
         validateArgs(args);
-        Map<ApplicationArgumentName, String> parameters = parseArguments(args);
-        overrideApplicationLoaderWithSystemProperty(parameters);
-        return parameters;
-    }
-
-    private static void overrideApplicationLoaderWithSystemProperty(Map<ApplicationArgumentName, String> arguments) {
-        if (System.getProperty(APPLICATION_LOADER_CLASS) != null)
-            arguments.put(LOADER, System.getProperty(APPLICATION_LOADER_CLASS).trim());
+        return parseArguments(args);
     }
 
     private static Map<ApplicationArgumentName, String> parseArguments(String[] args) {
@@ -63,9 +51,6 @@ public class ConsoleApplication {
 
     private static ApplicationArgumentName parseArgumentsKey(String arg) {
         switch (arg.trim()) {
-            case "-l":
-            case "--loader":
-                return LOADER;
             case "-p":
             case "--path":
                 return PATH;

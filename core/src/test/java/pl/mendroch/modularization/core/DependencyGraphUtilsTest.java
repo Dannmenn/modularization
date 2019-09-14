@@ -27,7 +27,7 @@ public class DependencyGraphUtilsTest {
         Path directory = new File(getClass().getResource("/libs").getFile()).toPath();
         List<ModuleJarInfo> moduleJarInfos = loadModulesInformation(directory);
 
-        Graph<ModuleJarInfo, Dependency> graph = createDependencyGraph(moduleJarInfos, new HashMap<>());
+        Graph graph = createDependencyGraph(moduleJarInfos, new HashMap<>());
 
         assertNotNull(graph);
         assertEquals(
@@ -43,14 +43,14 @@ public class DependencyGraphUtilsTest {
         Path directory = new File(getClass().getResource("/libs").getFile()).toPath();
         List<ModuleJarInfo> moduleJarInfos = loadModulesInformation(directory);
 
-        Graph<ModuleJarInfo, Dependency> graph = createDependencyGraph(moduleJarInfos,
+        Graph graph = createDependencyGraph(moduleJarInfos,
                 Map.of(
                         new Dependency("pl.mendroch.example.modularization.provider", "1.0-SNAPSHOT"),
                         new Dependency("pl.mendroch.example.modularization.provider", "1.1-SNAPSHOT")));
 
         assertNotNull(graph);
         assertEquals(
-                EXAMPLE_1_0 + "->[" + SERVICE_1_0 + ", " + PROVIDER_1_1 + "]\n" +
+                EXAMPLE_1_0 + "->[" + PROVIDER_1_1 + ", " + SERVICE_1_0 + "]\n" +
                         PROVIDER_1_1 + "->[" + SERVICE_1_0 + "]\n" +
                         SERVICE_1_0 + "->[]\n",
                 graph.toString());

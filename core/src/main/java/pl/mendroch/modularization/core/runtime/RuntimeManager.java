@@ -4,9 +4,7 @@ import lombok.extern.java.Log;
 import pl.mendroch.modularization.common.api.model.graph.Graph;
 import pl.mendroch.modularization.common.api.model.modules.Dependency;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
-import pl.mendroch.modularization.common.api.model.tree.Node;
-import pl.mendroch.modularization.core.DependencyTreeBuilder;
-import pl.mendroch.modularization.core.graph.GraphFlattener;
+import pl.mendroch.modularization.core.AnalyzedGraph;
 import pl.mendroch.modularization.core.model.LoadedModuleReference;
 
 import java.lang.reflect.Method;
@@ -35,12 +33,12 @@ public enum RuntimeManager {
     private LoadedModuleReference parent;
     private LoadedModuleReference[] references;
 
-    public void initialize(Node<ModuleJarInfo> root, Set<ModuleJarInfo> thirdPartyJars) {
+    public void initialize(List<ModuleJarInfo> flattened, Set<ModuleJarInfo> thirdPartyJars) {
         if (initialized.getAndSet(true)) {
             log.severe("Application already started. Update modules graph instead of reinitializing");
             throw new IllegalStateException("Application already started");
         } else {
-            buildModulesGraph(root, thirdPartyJars);
+            buildModulesGraph(flattened, thirdPartyJars);
         }
     }
 
@@ -50,24 +48,23 @@ public enum RuntimeManager {
     }
 
     public void update() throws Exception {
-        Future<DependencyTreeBuilder> treeBuilderFuture = executor.submit(() -> {
+        Future<AnalyzedGraph> treeBuilderFuture = executor.submit(() -> {
             log.info("Building updated dependency graph");
             List<ModuleJarInfo> moduleJarInfos = MODULE_FILES_MANAGER.getModules();
 
-            Graph<ModuleJarInfo, Dependency> dependencyGraph = createDependencyGraph(moduleJarInfos, OVERRIDE_MANAGER.getOverrides());
+            Graph dependencyGraph = createDependencyGraph(moduleJarInfos, OVERRIDE_MANAGER.getOverrides());
             log.fine("Updated graph:" + System.lineSeparator() + dependencyGraph.toString());
-            return new DependencyTreeBuilder(dependencyGraph);
+            return new AnalyzedGraph(dependencyGraph);
         });
-        DependencyTreeBuilder dependencyTreeBuilder = treeBuilderFuture.get();
+        AnalyzedGraph analyzedGraph = treeBuilderFuture.get();
         log.info("Building updated dependency tree finished");
 
-        log.info("Third party dependencies which won't be updated:" + dependencyTreeBuilder.getThirdPartyJars());
-        log.info("Obsolete dependencies:" + dependencyTreeBuilder.getObsolete());
-        updateRoot(dependencyTreeBuilder.getRoot());
+        log.info("Third party dependencies which won't be updated:" + analyzedGraph.getThirdPartyJars());
+        log.info("Obsolete dependencies:" + analyzedGraph.getObsolete());
+        updateRoot(analyzedGraph.getFlattened());
     }
 
-    private void updateRoot(Node<ModuleJarInfo> root) {
-        List<ModuleJarInfo> flattened = new GraphFlattener<>(root).flatten();
+    private void updateRoot(List<ModuleJarInfo> flattened) {
         for (RuntimeUpdateListener listener : listeners) {
             listener.beforeUpdate();
         }
@@ -77,8 +74,7 @@ public enum RuntimeManager {
         }
     }
 
-    private void buildModulesGraph(Node<ModuleJarInfo> root, Set<ModuleJarInfo> thirdPartyJars) {
-        List<ModuleJarInfo> flattened = new GraphFlattener<>(root).flatten();
+    private void buildModulesGraph(List<ModuleJarInfo> flattened, Set<ModuleJarInfo> thirdPartyJars) {
         ClasspathBuilder builder = new ClasspathBuilder(flattened);
         references = builder.buildClassLoaders(thirdPartyJars);
         parent = builder.getParent();
@@ -89,7 +85,7 @@ public enum RuntimeManager {
             log.severe("Application already started. Update modules graph instead of reinitializing");
             throw new IllegalStateException("Application already started");
         }
-        final LoadedModuleReference entryPoint = references[0];
+        final LoadedModuleReference entryPoint = references[references.length - 1];
         executor.submit(() -> {
             try {
                 String mainClass = entryPoint.getModule().getJarInfo().getMainClass();

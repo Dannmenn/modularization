@@ -46,7 +46,7 @@ class ClasspathBuilder {
             loader = layer.findLoader(moduleNames.get(0));
         }
         parent = new LoadedModuleReference(null, null, conf, layer, loader);
-        for (int i = modules.size() - 1; i >= 0; i--) {
+        for (int i = 0; i < modules.size(); i++) {
             ModuleJarInfo module = modules.get(i);
             JarInfo jarInfo = module.getJarInfo();
             String moduleName = module.getDescriptor().name();

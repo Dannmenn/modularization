@@ -8,18 +8,14 @@ import pl.mendroch.modularization.common.api.model.modules.JarInfo;
 import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
 import pl.mendroch.modularization.common.api.model.modules.OptionalDependency;
 import pl.mendroch.modularization.common.api.model.tree.Node;
+import pl.mendroch.modularization.common.api.utils.GraphUtils;
 
 import java.lang.module.ModuleDescriptor.Version;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static pl.mendroch.modularization.common.api.utils.GraphUtils.isCyclic;
-
-public class DependencyTreeBuilder {
+public class AnalyzedGraph {
     @Getter
-    private final Graph<ModuleJarInfo, Dependency> graph;
+    private final Graph graph;
     private final Map<Dependency, ModuleJarInfo> mapper;
     @Getter
     private final Set<Dependency> jars = new HashSet<>();
@@ -30,20 +26,16 @@ public class DependencyTreeBuilder {
     @Getter
     private Node<ModuleJarInfo> root;
     private Vertex<Dependency> entry;
+    @Getter
+    private List<ModuleJarInfo> flattened;
 
-    public DependencyTreeBuilder(Graph<ModuleJarInfo, Dependency> graph) {
+    public AnalyzedGraph(Graph graph) {
         this.graph = graph;
         mapper = graph.getMapper();
         initializeGraphWithEntryPoint();
-        validateGraph();
+        flattened = GraphUtils.flatten(graph, entry);
         buildGraph();
         analyzeGraph();
-    }
-
-    private void validateGraph() {
-        if (isCyclic(graph, entry)) {
-            throw new IllegalStateException("Application graph cannot contain cyclic dependencies");
-        }
     }
 
     private void buildGraph() {

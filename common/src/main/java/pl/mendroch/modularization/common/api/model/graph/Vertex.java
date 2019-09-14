@@ -1,17 +1,30 @@
 package pl.mendroch.modularization.common.api.model.graph;
 
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
-@EqualsAndHashCode
-public class Vertex<V> {
-    private final V value;
+@Setter
+@RequiredArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class Vertex<T> {
+    @EqualsAndHashCode.Include
+    private final T value;
+    private final int priority;
+    private double factory = 1.;
 
     public static <T> Vertex<T> vertexOf(T value) {
-        return new Vertex<>(value);
+        return new Vertex<>(value, 1);
+    }
+
+    public static <T> Vertex<T> vertexOf(T value, int priority) {
+        return new Vertex<>(value, priority);
+    }
+
+    public int getPriority() {
+        return (int) (factory * priority);
     }
 
     @Override

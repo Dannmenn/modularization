@@ -9,17 +9,12 @@ import pl.mendroch.modularization.core.model.LoadedModuleReference;
 
 import java.lang.module.Configuration;
 import java.lang.module.ModuleFinder;
-import java.lang.module.ModuleReference;
-import java.lang.module.ResolvedModule;
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.module.Configuration.resolveAndBind;
 import static java.util.logging.Level.SEVERE;
-import static java.util.stream.Collectors.toSet;
 
 @Log
 class ClasspathUpdater {
@@ -33,15 +28,15 @@ class ClasspathUpdater {
         LoadedModuleReference[] result = new LoadedModuleReference[modules.size()];
         LoadedModuleReference parent = parentReference;
         boolean clearCaches = false;
-        for (int i = modules.size() - 1, referenceIndex = references.length - 1; i >= 0; i--) {
+        for (int i = 0, referenceIndex = 0; i < modules.size(); i++) {
             ModuleJarInfo module = modules.get(i);
             int tmpIndex = findModule(references, referenceIndex, module);
             if (tmpIndex >= 0) {
-                referenceIndex = tmpIndex - 1;
+                referenceIndex = tmpIndex + 1;
                 LoadedModuleReference reference = references[tmpIndex];
                 ClassLoader loader = reference.getLoader();
                 boolean parentChanged = !loader.getParent().equals(parent.getLoader());
-                if (parentChanged) {
+                if (parentChanged || tmpIndex > i) {
                     clearCaches = true;
                 }
                 result[i] = useExistingClassLoader(reference, parent, parentChanged, clearCaches);
@@ -99,13 +94,13 @@ class ClasspathUpdater {
 
     private int findModule(LoadedModuleReference[] references, int referenceIndex, ModuleJarInfo module) {
         int tmpIndex = referenceIndex;
-        while (tmpIndex >= 0) {
+        while (tmpIndex < references.length) {
             if (module.equals(references[tmpIndex].getModule())) {
-                break;
+                return tmpIndex;
             }
-            tmpIndex--;
+            tmpIndex++;
         }
-        return tmpIndex;
+        return -1;
     }
 
     private void updateParentFieldWithUnsafe(Object value, Class<?> aClass, ClassLoader object) {
@@ -124,30 +119,6 @@ class ClasspathUpdater {
             log.log(SEVERE, e.getMessage(), e);
         } finally {
             if (field != null) field.setAccessible(false);
-        }
-    }
-
-    private static class LoadedModuleReferenceMock extends LoadedModuleReference {
-        private LoadedModuleReferenceMock(ModuleLayer layer, ClassLoader loader) {
-            super(null, null, layer.configuration(), layer, loader);
-        }
-    }
-
-    private static class ModuleFinderDelegate implements ModuleFinder {
-        private final Configuration configuration;
-
-        private ModuleFinderDelegate(Configuration configuration) {
-            this.configuration = configuration;
-        }
-
-        @Override
-        public Optional<ModuleReference> find(String name) {
-            return configuration.findModule(name).map(ResolvedModule::reference);
-        }
-
-        @Override
-        public Set<ModuleReference> findAll() {
-            return configuration.modules().stream().map(ResolvedModule::reference).collect(toSet());
         }
     }
 }

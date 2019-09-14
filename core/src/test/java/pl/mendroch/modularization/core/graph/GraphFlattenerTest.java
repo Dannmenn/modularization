@@ -1,56 +1,90 @@
 package pl.mendroch.modularization.core.graph;
 
 import org.junit.Test;
-import pl.mendroch.modularization.common.api.model.tree.Node;
+import pl.mendroch.modularization.common.api.model.graph.Vertex;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
-import static pl.mendroch.modularization.common.api.model.tree.Node.node;
+import static pl.mendroch.modularization.common.api.model.graph.Vertex.vertexOf;
 
 public class GraphFlattenerTest {
-    @Test(expected = NullPointerException.class)
-    public void flattenShouldThrowException() {
-        GraphFlattener<String> flattener = new GraphFlattener<>(null);
-
-        flattener.flatten();
-    }
+    private Map<Vertex<String>, List<Vertex<String>>> edges = new HashMap<>();
 
     @Test
     public void baseGraph() {
-        Node<String> d = node("d");
-        Node<String> h = node("h", d);
-        Node<String> g = node("g", h);
-        Node<String> z = node("z", h);
-        Node<String> f = node("f", g);
-        Node<String> u = node("u", g, z);
-        Node<String> b = node("b", u, z, f, node("c"));
-        Node<String> root = node("y", d, g, b, node("x"));
-        GraphFlattener<String> flattener = new GraphFlattener<>(root);
+        Vertex<String> d = vertexOf("d");
+        Vertex<String> h = vertexOf("h");
+        addEdge(d, h);
+        Vertex<String> g = vertexOf("g");
+        addEdge(h, g);
+        Vertex<String> z = vertexOf("z");
+        addEdge(h, z);
+        Vertex<String> f = vertexOf("f");
+        addEdge(g, f);
+        Vertex<String> u = vertexOf("u");
+        addEdge(g, u);
+        addEdge(z, u);
+        Vertex<String> b = vertexOf("b");
+        addEdge(u, b);
+        addEdge(z, b);
+        addEdge(f, b);
+        addEdge(vertexOf("c"), b);
+        Vertex<String> root = vertexOf("y");
+        addEdge(d, root);
+        addEdge(g, root);
+        addEdge(b, root);
+        addEdge(vertexOf("x"), root);
+        GraphFlattener<String> flattener = new GraphFlattener<>(edges, root);
 
-        assertEquals(Arrays.asList("y", "x", "b", "c", "f", "u", "g", "z", "h", "d"), flattener.flatten());
+        assertEquals(Arrays.asList("d", "h", "g", "z", "u", "f", "c", "b", "x", "y"), flattener.flatten());
+    }
+
+    private void addEdge(Vertex<String> to, Vertex<String> from) {
+        edges.computeIfAbsent(from, stringVertex -> new ArrayList<>()).add(to);
     }
 
     @Test
     public void complexGraph() {
-        Node<String> l = node("l");
-        Node<String> k = node("k", l);
-        Node<String> c = node("c");
-        Node<String> d = node("d", c, k);
-        Node<String> b = node("b", d, l);
-        Node<String> h = node("h", b);
-        Node<String> j = node("j", h);
-        Node<String> i = node("i", k, j);
-        Node<String> f = node("f", h, i);
-        Node<String> g = node("g", h);
-        Node<String> e = node("e", f, g);
-        Node<String> a = node("a", b, c, d, e);
-        Node<String> root = node("x", c, a, b, e);
-        GraphFlattener<String> flattener = new GraphFlattener<>(root);
+        Vertex<String> l = vertexOf("l");
+        Vertex<String> k = vertexOf("k");
+        addEdge(l, k);
+        Vertex<String> c = vertexOf("c");
+        Vertex<String> d = vertexOf("d");
+        addEdge(c, d);
+        addEdge(k, d);
+        Vertex<String> b = vertexOf("b");
+        addEdge(d, b);
+        addEdge(l, b);
+        Vertex<String> h = vertexOf("h");
+        addEdge(b, h);
+        Vertex<String> j = vertexOf("j");
+        addEdge(h, j);
+        Vertex<String> i = vertexOf("i");
+        addEdge(k, i);
+        addEdge(j, i);
+        Vertex<String> f = vertexOf("f");
+        addEdge(h, f);
+        addEdge(i, f);
+        Vertex<String> g = vertexOf("g");
+        addEdge(h, g);
+        Vertex<String> e = vertexOf("e");
+        addEdge(f, e);
+        addEdge(g, e);
+        Vertex<String> a = vertexOf("a");
+        addEdge(b, a);
+        addEdge(c, a);
+        addEdge(d, a);
+        addEdge(e, a);
+        Vertex<String> root = vertexOf("x");
+        addEdge(c, root);
+        addEdge(a, root);
+        addEdge(b, root);
+        addEdge(e, root);
 
-        List<String> result = flattener.flatten();
-        System.out.println(result);
-        assertEquals(Arrays.asList("x", "a", "e", "g", "f", "i", "j", "h", "b", "d", "c", "k", "l"), result);
+        GraphFlattener<String> flattener = new GraphFlattener<>(edges, root);
+        flattener.flatten();
+
+        assertEquals(Arrays.asList("c", "l", "k", "d", "b", "h", "j", "i", "f", "g", "e", "a", "x"), flattener.flatten());
     }
 }

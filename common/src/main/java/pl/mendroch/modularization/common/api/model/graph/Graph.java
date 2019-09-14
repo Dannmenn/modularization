@@ -1,38 +1,47 @@
 package pl.mendroch.modularization.common.api.model.graph;
 
+import lombok.extern.java.Log;
+import pl.mendroch.modularization.common.api.model.modules.Dependency;
+import pl.mendroch.modularization.common.api.model.modules.ModuleJarInfo;
+
 import java.util.*;
 import java.util.Map.Entry;
 
-import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 
-public class Graph<K, V> {
-    private final Map<Vertex<V>, List<Vertex<V>>> edges = new HashMap<>();
-    private Map<V, K> mapper;
+@Log
+public class Graph {
+    private static final Comparator<Vertex<Dependency>> COMPARATOR = Comparator
+            .<Vertex<Dependency>>comparingInt(Vertex::getPriority)
+            .reversed()
+            .thenComparing(Vertex::getValue);
+    private final Map<Vertex<Dependency>, Set<Vertex<Dependency>>> edges = new HashMap<>();
+    private Map<Dependency, ModuleJarInfo> mapper;
 
-    public static <S, T> Builder<S, T> builder() {
-        return new Builder<>();
+    public static Builder builder() {
+        return new Builder();
     }
 
-    private List<Vertex<V>> addVertexInternal(Vertex<V> vertex) {
-        return edges.computeIfAbsent(vertex, v -> new ArrayList<>());
+    private Set<Vertex<Dependency>> addVertexInternal(Vertex<Dependency> vertex) {
+        return edges.computeIfAbsent(vertex, v -> new TreeSet<>(COMPARATOR));
     }
 
-    public Map<V, K> getMapper() {
+    public Map<Dependency, ModuleJarInfo> getMapper() {
         return mapper;
     }
 
-    public Set<Vertex<V>> getVertices() {
+    public Set<Vertex<Dependency>> getVertices() {
         return edges.keySet();
     }
 
-    public List<Vertex<V>> getEdges(Vertex<V> vertex) {
-        return edges.getOrDefault(vertex, emptyList());
+    public Set<Vertex<Dependency>> getEdges(Vertex vertex) {
+        return edges.getOrDefault(vertex, emptySet());
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (Entry<Vertex<V>, List<Vertex<V>>> entry : edges.entrySet()) {
+        for (Entry<Vertex<Dependency>, Set<Vertex<Dependency>>> entry : edges.entrySet()) {
             builder
                     .append(entry.getKey())
                     .append("->")
@@ -42,22 +51,25 @@ public class Graph<K, V> {
         return builder.toString();
     }
 
-    public static class Builder<S, T> {
-        private final Graph<S, T> graph = new Graph<>();
+    public static class Builder {
+        private final Graph graph = new Graph();
 
-        public void dependencyMapper(Map<T, S> mapper) {
+        public void dependencyMapper(Map<Dependency, ModuleJarInfo> mapper) {
             graph.mapper = mapper;
         }
 
-        public void addVertex(Vertex<T> vertex) {
+        public void addVertex(Vertex<Dependency> vertex) {
             graph.addVertexInternal(vertex);
         }
 
-        public void addEdge(Vertex<T> from, Vertex<T> to) {
-            graph.addVertexInternal(from).add(to);
+        public void addEdge(Vertex<Dependency> from, Vertex<Dependency> to) {
+            if (!graph.addVertexInternal(from).add(to)) {
+                log.warning("Added Edge failed: " + to);
+            }
+            to.setFactory(to.getFactory() + 0.4);
         }
 
-        public Graph<S, T> createGraph() {
+        public Graph createGraph() {
             return graph;
         }
     }
