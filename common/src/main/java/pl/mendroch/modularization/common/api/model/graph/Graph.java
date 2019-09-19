@@ -14,7 +14,8 @@ public class Graph {
     private static final Comparator<Vertex<Dependency>> COMPARATOR = Comparator
             .<Vertex<Dependency>>comparingInt(Vertex::getPriority)
             .reversed()
-            .thenComparing(Vertex::getValue);
+            .thenComparing(Vertex::getValue)
+            .reversed();
     private final Map<Vertex<Dependency>, Set<Vertex<Dependency>>> edges = new HashMap<>();
     private Map<Dependency, ModuleJarInfo> mapper;
 

@@ -12,6 +12,6 @@ public final class GraphUtils {
     }
 
     public static List<ModuleJarInfo> flatten(Graph graph, Vertex entry) {
-        return new CycleFlattener(graph, entry).flatten();
+        return new GraphFlattener(graph, entry).flatten();
     }
 }

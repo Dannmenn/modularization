@@ -32,7 +32,7 @@ public class DependencyGraphUtilsTest {
         assertNotNull(graph);
         assertEquals(
                 PROVIDER_1_0 + "->[" + SERVICE_1_0 + "]\n" +
-                        EXAMPLE_1_0 + "->[" + SERVICE_1_0 + ", " + PROVIDER_1_0 + ", " + PROVIDER_1_1 + "]\n" +
+                        EXAMPLE_1_0 + "->[" + PROVIDER_1_1 + ", " + PROVIDER_1_0 + ", " + SERVICE_1_0 + "]\n" +
                         PROVIDER_1_1 + "->[" + SERVICE_1_0 + "]\n" +
                         SERVICE_1_0 + "->[]\n",
                 graph.toString());
@@ -50,7 +50,7 @@ public class DependencyGraphUtilsTest {
 
         assertNotNull(graph);
         assertEquals(
-                EXAMPLE_1_0 + "->[" + PROVIDER_1_1 + ", " + SERVICE_1_0 + "]\n" +
+                EXAMPLE_1_0 + "->[" + SERVICE_1_0 + ", " + PROVIDER_1_1 + "]\n" +
                         PROVIDER_1_1 + "->[" + SERVICE_1_0 + "]\n" +
                         SERVICE_1_0 + "->[]\n",
                 graph.toString());

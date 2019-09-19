@@ -9,16 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CycleFlattener {
+public class GraphFlattener {
     private final Graph graph;
     private final Map<Dependency, ModuleJarInfo> mapper;
-    private final Vertex entry;
-    private final List<Vertex> vertices;
+    private final Vertex<Dependency> entry;
+    private final List<Vertex<Dependency>> vertices;
     private final boolean[] visited;
     private final boolean[] recStack;
     private final List<ModuleJarInfo> flattened = new ArrayList<>();
 
-    public CycleFlattener(Graph graph, Vertex entry) {
+    public GraphFlattener(Graph graph, Vertex<Dependency> entry) {
         this.graph = graph;
         this.entry = entry;
         vertices = new ArrayList<>(graph.getVertices());
@@ -38,7 +38,7 @@ public class CycleFlattener {
 
         visited[i] = true;
         recStack[i] = true;
-        Vertex vertex = vertices.get(i);
+        Vertex<Dependency> vertex = vertices.get(i);
         for (Vertex edge : graph.getEdges(vertex)) {
             if (flatten(vertices.indexOf(edge)))
                 return true;
@@ -50,7 +50,7 @@ public class CycleFlattener {
         return false;
     }
 
-    private ModuleJarInfo getVertexValue(Vertex vertex) {
+    private ModuleJarInfo getVertexValue(Vertex<Dependency> vertex) {
         return mapper.get(vertex.getValue());
     }
 }

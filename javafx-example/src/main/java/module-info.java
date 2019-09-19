@@ -1,5 +1,5 @@
-import pl.mendroch.modularization.example.javafx.api.TabViewProvider;
-import pl.mendroch.modularization.example.javafx.view.DefaultTabViewProvider;
+import pl.mendroch.modularization.example.javafx.api.ReportViewProvider;
+import pl.mendroch.modularization.example.javafx.view.TableReportViewProvider;
 
 module pl.mendroch.example.modularization.javafx {
     requires static lombok;
@@ -13,6 +13,6 @@ module pl.mendroch.example.modularization.javafx {
 
     exports pl.mendroch.modularization.example.javafx;
 
-    uses TabViewProvider;
-    provides TabViewProvider with DefaultTabViewProvider;
+    uses ReportViewProvider;
+    provides ReportViewProvider with TableReportViewProvider;
 }

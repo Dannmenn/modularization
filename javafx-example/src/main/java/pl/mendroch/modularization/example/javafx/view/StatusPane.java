@@ -1,6 +1,7 @@
 package pl.mendroch.modularization.example.javafx.view;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -10,6 +11,7 @@ import org.controlsfx.control.Notifications;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.glyphfont.Glyph;
 import pl.mendroch.modularization.core.runtime.ModuleChangeListener;
+import pl.mendroch.modularization.example.javafx.api.ReportDataObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +31,7 @@ public class StatusPane extends StatusBar implements ModuleChangeListener {
     private final Dialog<Boolean> dialog = new Dialog<>();
     private final List<String> infoMessages = new ArrayList<>();
 
-    StatusPane() {
+    StatusPane(ObservableList<ReportDataObject> data) {
         MODULE_FILES_MANAGER.addListener(this);
         ButtonType cancelButtonType = new ButtonType("Cancel", CANCEL_CLOSE);
         ButtonType loginButtonType = new ButtonType("Update", OK_DONE);
@@ -60,6 +62,9 @@ public class StatusPane extends StatusBar implements ModuleChangeListener {
             dialog.setContentText(String.join("\n", infoMessages));
             dialog.showAndWait();
         });
+        Button addTableItemButton = new Button("", new Glyph("FontAwesome", "PLUS_CIRCLE"));
+        getLeftItems().add(addTableItemButton);
+        addTableItemButton.setOnAction(event -> data.add(new ReportDataObject()));
     }
 
     @Override

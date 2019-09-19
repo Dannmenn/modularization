@@ -1,12 +1,13 @@
 package pl.mendroch.modularization.example.javafx.api;
 
-import javafx.scene.control.Tab;
-
-public interface TabViewProvider<T extends Tab> {
+public interface ReportViewProvider<T extends ReportView> {
     T provide();
 
     String getName();
 
+    /**
+     * Priority controls placement of an item on the menu.
+     */
     default int priority() {
         return 100;
     }
